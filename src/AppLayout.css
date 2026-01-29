@@ -1,0 +1,196 @@
+/* Main Header */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: var(--border-light);
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+}
+
+/* Profile / Auth Styles */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8f9fa;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.login-trigger-btn {
+    background-color: rgb(0, 76, 255);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-trigger-btn:hover {
+    background-color: #1976D2;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+}
+
+.logout-btn:hover {
+    opacity: 1;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-bg-tertiary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+}
+
+/* Hero Section */
+.hero-section {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.hero-content {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+}
+
+.hero-icon {
+    width: 80px;
+    height: 80px;
+    background-color: var(--color-bg-tertiary);
+    /* Light gray circle/square */
+    border-radius: var(--border-radius-circle);
+    /* Or rounded square as per image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--color-text-secondary);
+}
+
+.hero-details h1 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.status-badge {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-badge.open {
+    color: #4CAF50;
+    /* Green */
+}
+
+.status-badge.closed {
+    color: #F44336;
+    /* Red */
+}
+
+.share-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    gap: 4px;
+}
+
+.share-icon-circle {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-bg-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+/* Tabs */
+.tabs-nav {
+    display: flex;
+    padding: 0 var(--spacing-lg);
+    border-bottom: 1px solid var(--color-bg-tertiary);
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.tab-link {
+    padding: var(--spacing-md) 0;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab-link-calendario {
+    padding: var(--spacing-md) 0;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background-color: rgb(40, 174, 60);
+    border-radius: 10px;
+    padding: 0px 5px 0px 5px;
+
+}
+
+
+
+.tab-link.active {
+    color: var(--color-text-primary);
+    border-bottom-color: var(--color-text-primary);
+}
+
+.section-title {
+    padding: 0 var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.5rem;
+}

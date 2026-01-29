@@ -1,0 +1,137 @@
+.admin-calendar-container {
+    padding: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-dark);
+}
+
+.reservation-count {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.calendar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.date-group {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    overflow: hidden;
+}
+
+.date-heading {
+    background: #f8f9fa;
+    padding: 12px 20px;
+    margin: 0;
+    font-size: 1rem;
+    color: #444;
+    border-bottom: 1px solid #eee;
+    text-transform: capitalize;
+}
+
+.reservations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+
+.reservation-card {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reservation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: #e0e0e0;
+}
+
+.res-time {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    min-width: 50px;
+}
+
+.res-details {
+    flex: 1;
+}
+
+.res-name {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.res-table {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.res-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.btn-delete-res {
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    transition: background 0.2s, opacity 0.2s;
+    opacity: 0.4;
+
+}
+
+.btn-delete-res:hover {
+    background: #c21919;
+    opacity: 1;
+}
+
+.empty-calendar {
+    text-align: center;
+    padding: 60px;
+    color: #999;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
