@@ -71,12 +71,18 @@ function App() {
             // Construct WhatsApp Message
             const table = tablesData.find(t => t.id === data.tableId);
             const tableName = table ? table.name : `Mesa ${data.tableId}`;
-            const reservationId = result.data[0].id;
+            const reservationId = result.data?.[0]?.id || 'null';
 
-            // Cancellation Link
-            const cancelUrl = `${window.location.origin}${window.location.pathname}?cancel=${reservationId}`;
+            // Cancellation Link (only if we have an ID)
+            const cancelUrl = reservationId !== 'null'
+                ? `${window.location.origin}${window.location.pathname}?cancel=${reservationId}`
+                : '';
 
-            const message = `*Confirmación de Reserva*\n\nHola ${data.name},\n\nTe confirmamos tu reserva en *Club de billar Paterna*:\n\n📍 Mesa: ${tableName}\n📅 Fecha: ${data.date}\n⏰ Hora: ${data.time}h\n\nSi necesitas cancelar tu reserva, puedes hacerlo pulsando aquí:\n${cancelUrl}\n\n¡Te esperamos! 🎱`;
+            const cancelText = cancelUrl
+                ? `\n\nSi necesitas cancelar tu reserva, puedes hacerlo pulsando aquí:\n${cancelUrl}`
+                : '';
+
+            const message = `*Confirmación de Reserva*\n\nHola ${data.name},\n\nTe confirmamos tu reserva en *Club de billar Paterna*:\n\n📍 Mesa: ${tableName}\n📅 Fecha: ${data.date}\n⏰ Hora: ${data.time}h${cancelText}\n\n¡Te esperamos! 🎱`;
 
             // Format phone
             let phone = data.mobile.replace(/\s+/g, '');

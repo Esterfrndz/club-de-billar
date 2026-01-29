@@ -62,7 +62,7 @@ export function useReservations() {
 
             // Optimistic update or refetch
             setReservations(prev => [...prev, ...data]);
-            return { success: true };
+            return { success: true, data };
         } catch (err) {
             console.error('Error adding reservation:', err);
             return { success: false, error: err.message };
