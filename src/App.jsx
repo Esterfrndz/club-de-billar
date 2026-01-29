@@ -68,9 +68,6 @@ function App() {
         );
 
         if (result.success) {
-            // Success alert
-            alert(`Reserva confirmada con éxito para la Mesa ${data.tableId} a las ${data.time}`);
-
             // Construct WhatsApp Message
             const table = tablesData.find(t => t.id === data.tableId);
             const tableName = table ? table.name : `Mesa ${data.tableId}`;
@@ -81,19 +78,18 @@ function App() {
 
             const message = `*Confirmación de Reserva*\n\nHola ${data.name},\n\nTe confirmamos tu reserva en *Club de billar Paterna*:\n\n📍 Mesa: ${tableName}\n📅 Fecha: ${data.date}\n⏰ Hora: ${data.time}h\n\nSi necesitas cancelar tu reserva, puedes hacerlo pulsando aquí:\n${cancelUrl}\n\n¡Te esperamos! 🎱`;
 
-            // Format phone (remove spaces and ensure it starts with +34 if no country code)
+            // Format phone
             let phone = data.mobile.replace(/\s+/g, '');
-            if (!phone.startsWith('+')) {
-                phone = '+34' + phone; // Default to Spain if not provided
-            }
-            phone = phone.startsWith('+') ? phone.slice(1) : phone; // wa.me prefers without '+'
+            if (!phone.startsWith('+')) phone = '+34' + phone;
+            phone = phone.replace('+', '');
 
             const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-            // Open WhatsApp
-            window.open(whatsappUrl, '_blank');
+            // In production, window.open after await is often blocked.
+            // Using window.location.href is more reliable for a "final" action.
+            window.location.href = whatsappUrl;
 
-            handleCloseWizard(); // Close wizard on success
+            handleCloseWizard();
         } else {
             alert(`Error: ${result.error}`);
         }
