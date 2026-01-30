@@ -63,7 +63,6 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                         <div className="step-line"></div>
                         <div className={`step-circle ${step >= 3 ? 'active' : ''}`}>3</div>
                     </div>
-                    <div className="user-indicator">👤 Jesus</div>
                 </div>
 
                 <div className="wizard-body">
