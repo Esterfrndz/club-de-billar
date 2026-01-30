@@ -139,7 +139,7 @@ function App() {
                             onClick={() => setIsLargeFont(!isLargeFont)}
                             title={isLargeFont ? "Tamaño de letra normal" : "Aumentar tamaño de letra"}
                         >
-                            A+
+                            A
                         </button>
                     </div>
                     <button
