@@ -126,7 +126,7 @@
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
     border-radius: var(--border-radius-sm);
-    font-size: 1rem;
+    font-size: inherit;
     outline: none;
 }
 

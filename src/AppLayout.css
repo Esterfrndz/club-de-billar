@@ -37,6 +37,31 @@
     border: 1px solid var(--color-border);
 }
 
+.accessibility-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 12px;
+    background: var(--color-bg-tertiary);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.font-control-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-primary);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.font-control-btn:hover {
+    background: var(--color-border);
+}
+
 .theme-toggle-btn {
     background: var(--color-bg-tertiary);
     border: none;
@@ -220,7 +245,7 @@
     border: 1px solid var(--color-border);
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
-    font-size: 0.9rem;
+    font-size: inherit;
     width: 200px;
     outline: none;
 }

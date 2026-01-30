@@ -19,6 +19,11 @@ function App() {
         return saved ? JSON.parse(saved) : false;
     });
 
+    const [fontScale, setFontScale] = useState(() => {
+        const saved = localStorage.getItem('fontScale');
+        return saved ? parseFloat(saved) : 1;
+    });
+
     // Handle Dark Mode
     useEffect(() => {
         if (darkMode) {
@@ -28,6 +33,12 @@ function App() {
         }
         localStorage.setItem('darkMode', JSON.stringify(darkMode));
     }, [darkMode]);
+
+    // Handle Font Scale
+    useEffect(() => {
+        document.documentElement.style.setProperty('--font-scale', fontScale);
+        localStorage.setItem('fontScale', fontScale);
+    }, [fontScale]);
 
     // Handle cancellation via URL parameter
     useEffect(() => {
@@ -121,6 +132,32 @@ function App() {
             <nav className="top-nav">
                 <div className="brand-name">Club de billar Paterna</div>
                 <div className="user-profile">
+                    <div className="accessibility-controls">
+                        <button
+                            className="font-control-btn"
+                            onClick={() => setFontScale(1)}
+                            title="Letra normal"
+                            style={{ fontSize: '14px' }}
+                        >
+                            A
+                        </button>
+                        <button
+                            className="font-control-btn"
+                            onClick={() => setFontScale(1.2)}
+                            title="Letra grande"
+                            style={{ fontSize: '18px' }}
+                        >
+                            A
+                        </button>
+                        <button
+                            className="font-control-btn"
+                            onClick={() => setFontScale(1.4)}
+                            title="Letra muy grande"
+                            style={{ fontSize: '22px' }}
+                        >
+                            A
+                        </button>
+                    </div>
                     <button
                         className="theme-toggle-btn"
                         onClick={() => setDarkMode(!darkMode)}
