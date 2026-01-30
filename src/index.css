@@ -1,38 +1,48 @@
 :root {
-  /* Color Palette - Clean Light Service Style */
-  --color-bg-primary: #FFFFFF;
-  --color-bg-secondary: #F8F9FA;
-  --color-bg-tertiary: #EEEEEE;
-
-  --color-accent-primary: #4A90E2;
-  /* Soft Blue for buttons */
-  --color-accent-secondary: #006400;
-  /* Keeping green for subtle cues if needed */
-
-  --color-text-primary: #2C3E50;
-  --color-text-secondary: #5F6368;
-  --color-text-muted: #9AA0A6;
-
-  --color-status-closed: #E53935;
-  /* Red for 'Cerrado' */
-
+  /* Common variables */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
-
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
   --border-radius-circle: 50%;
 
+  /* Light Theme (Default) */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8F9FA;
+  --color-bg-tertiary: #EEEEEE;
+  --color-accent-primary: #4A90E2;
+  --color-accent-secondary: #006400;
+  --color-text-primary: #2C3E50;
+  --color-text-secondary: #5F6368;
+  --color-text-muted: #9AA0A6;
+  --color-status-closed: #E53935;
+  --color-status-open: #2e7d32;
+  --color-border: #E0E0E0;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --border-light: 1px solid var(--color-border);
+}
 
-  --border-light: 1px solid #E0E0E0;
+.dark-mode {
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1E1E1E;
+  --color-bg-tertiary: #2D2D2D;
+  --color-accent-primary: #64B5F6;
+  --color-accent-secondary: #4CAF50;
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #B0B0B0;
+  --color-text-muted: #757575;
+  --color-status-closed: #EF5350;
+  --color-status-open: #81C784;
+  --color-border: #333333;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --border-light: 1px solid var(--color-border);
 }
 
 * {

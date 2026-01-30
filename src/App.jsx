@@ -14,6 +14,20 @@ function App() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario'
+    const [darkMode, setDarkMode] = useState(() => {
+        const saved = localStorage.getItem('darkMode');
+        return saved ? JSON.parse(saved) : false;
+    });
+
+    // Handle Dark Mode
+    useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+        localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    }, [darkMode]);
 
     // Handle cancellation via URL parameter
     useEffect(() => {
@@ -107,6 +121,13 @@ function App() {
             <nav className="top-nav">
                 <div className="brand-name">Club de billar Paterna</div>
                 <div className="user-profile">
+                    <button
+                        className="theme-toggle-btn"
+                        onClick={() => setDarkMode(!darkMode)}
+                        title={darkMode ? "Pasar a modo claro" : "Pasar a modo oscuro"}
+                    >
+                        {darkMode ? '☀️' : '🌙'}
+                    </button>
                     {user ? (
                         <div className="admin-menu">
                             <div className="user-avatar">👤</div>
@@ -162,20 +183,14 @@ function App() {
             <main>
                 {activeTab === 'servicios' && (
                     <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px', marginBottom: '16px' }}>
-                            <h2 className="section-title" style={{ padding: 0, margin: 0 }}>Servicios</h2>
-                            <div style={{ position: 'relative' }}>
-                                <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999' }}>🔍</span>
+                        <div className="section-header">
+                            <h2 className="section-title">Servicios</h2>
+                            <div className="search-container">
+                                <span className="search-icon">🔍</span>
                                 <input
                                     type="text"
                                     placeholder="Buscar..."
-                                    style={{
-                                        padding: '8px 12px 8px 32px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #E0E0E0',
-                                        fontSize: '0.9rem',
-                                        width: '200px'
-                                    }}
+                                    className="search-input"
                                 />
                             </div>
                         </div>

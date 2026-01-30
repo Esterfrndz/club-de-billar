@@ -14,16 +14,17 @@
 .calendar-header h2 {
     margin: 0;
     font-size: 1.5rem;
-    color: var(--text-dark);
+    color: var(--color-text-primary);
 }
 
 .reservation-count {
-    background: #e3f2fd;
-    color: #1976d2;
+    background: var(--color-bg-secondary);
+    color: var(--color-accent-primary);
     padding: 6px 16px;
     border-radius: 20px;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
 }
 
 .calendar-content {
@@ -33,20 +34,22 @@
 }
 
 .date-group {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #eee;
+    background: var(--color-bg-primary);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border);
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 
 .date-heading {
-    background: #f8f9fa;
+    background: var(--color-bg-secondary);
     padding: 12px 20px;
     margin: 0;
     font-size: 1rem;
-    color: #444;
-    border-bottom: 1px solid #eee;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
     text-transform: capitalize;
+    font-weight: 700;
 }
 
 .reservations-grid {
@@ -60,21 +63,21 @@
     display: flex;
     gap: 16px;
     padding: 16px;
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
 .reservation-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-color: #e0e0e0;
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-accent-primary);
 }
 
 .res-time {
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--color-accent-primary);
     font-size: 1.1rem;
     min-width: 50px;
 }
@@ -85,13 +88,13 @@
 
 .res-name {
     font-weight: 600;
-    color: var(--text-dark);
+    color: var(--color-text-primary);
     margin-bottom: 4px;
 }
 
 .res-table {
     font-size: 0.875rem;
-    color: #666;
+    color: var(--color-text-secondary);
     margin-bottom: 8px;
 }
 
@@ -100,11 +103,11 @@
     flex-direction: column;
     gap: 2px;
     font-size: 0.75rem;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .btn-delete-res {
-    background: red;
+    background: var(--color-status-closed);
     color: white;
     border: none;
     cursor: pointer;
@@ -115,20 +118,19 @@
     align-items: center;
     justify-content: center;
     align-self: flex-start;
-    transition: background 0.2s, opacity 0.2s;
-    opacity: 0.4;
-
+    transition: filter 0.2s, opacity 0.2s;
+    opacity: 0.6;
 }
 
 .btn-delete-res:hover {
-    background: #c21919;
+    filter: brightness(1.2);
     opacity: 1;
 }
 
 .empty-calendar {
     text-align: center;
     padding: 60px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .empty-icon {
