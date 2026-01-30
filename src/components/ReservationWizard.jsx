@@ -90,12 +90,21 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <div className="time-slots-grid">
                                         {['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'].map(slot => {
                                             const isTaken = checkAvailability(tableData.id, date, slot);
+
+                                            // Check if time has already passed for today
+                                            const now = new Date();
+                                            const today = now.toISOString().split('T')[0];
+                                            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                                            const isPast = date === today && slot <= currentTime;
+
+                                            const isDisabled = isTaken || isPast;
+
                                             return (
                                                 <button
                                                     key={slot}
-                                                    className={`time-slot ${time === slot ? 'selected' : ''} ${isTaken ? 'disabled' : ''}`}
-                                                    onClick={() => !isTaken && setTime(slot)}
-                                                    disabled={isTaken}
+                                                    className={`time-slot ${time === slot ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                                    onClick={() => !isDisabled && setTime(slot)}
+                                                    disabled={isDisabled}
                                                 >
                                                     {slot}
                                                 </button>

@@ -161,6 +161,14 @@
     border-color: var(--color-accent-primary);
 }
 
+.time-slot:disabled {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 .step-actions {
     margin-top: var(--spacing-xl);
     display: flex;
