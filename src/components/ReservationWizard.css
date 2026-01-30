@@ -20,20 +20,34 @@
 
 /* Header */
 .wizard-header {
+    background: var(--color-bg-secondary);
+    padding: var(--spacing-lg) var(--spacing-md);
+    position: relative;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.wizard-header-actions {
+    position: absolute;
+    top: 15px;
+    right: 15px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg-primary);
-    position: sticky;
-    top: 0;
+    gap: 12px;
+}
+
+.wizard-font-btn {
+    font-size: 1rem;
+    padding: 2px 8px;
+    background: var(--color-bg-tertiary);
 }
 
 .close-wizard-btn {
-    font-size: 2rem;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-text-muted);
+    cursor: pointer;
     line-height: 1;
-    color: var(--color-text-secondary);
 }
 
 .progress-steps {

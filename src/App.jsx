@@ -241,6 +241,8 @@ function App() {
                 onSubmit={handleConfirmReservation}
                 tableData={selectedTable}
                 checkAvailability={checkAvailability}
+                isLargeFont={isLargeFont}
+                setIsLargeFont={setIsLargeFont}
             />
 
             <LoginModal

@@ -9,7 +9,7 @@ import './ReservationWizard.css';
   - tableData: object { id, name, colorClass }
   - checkAvailability: function(tableId, date, time) -> boolean
 */
-export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability }) {
+export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont }) {
     const [step, setStep] = useState(1);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -55,7 +55,16 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
             <div className="wizard-container">
                 {/* Top Header / Progress */}
                 <div className="wizard-header">
-                    <button className="close-wizard-btn" onClick={onClose}>&times;</button>
+                    <div className="wizard-header-actions">
+                        <button
+                            className={`font-control-btn wizard-font-btn ${isLargeFont ? 'active' : ''}`}
+                            onClick={() => setIsLargeFont(!isLargeFont)}
+                            title={isLargeFont ? "Letra normal" : "Aumentar letra"}
+                        >
+                            A
+                        </button>
+                        <button className="close-wizard-btn" onClick={onClose}>&times;</button>
+                    </div>
                     <div className="progress-steps">
                         <div className={`step-circle ${step >= 1 ? 'active' : ''}`}>1</div>
                         <div className="step-line"></div>
