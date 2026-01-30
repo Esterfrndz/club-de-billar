@@ -19,9 +19,9 @@ function App() {
         return saved ? JSON.parse(saved) : false;
     });
 
-    const [fontScale, setFontScale] = useState(() => {
-        const saved = localStorage.getItem('fontScale');
-        return saved ? parseFloat(saved) : 1;
+    const [isLargeFont, setIsLargeFont] = useState(() => {
+        const saved = localStorage.getItem('isLargeFont');
+        return saved ? JSON.parse(saved) : false;
     });
 
     // Handle Dark Mode
@@ -36,9 +36,10 @@ function App() {
 
     // Handle Font Scale
     useEffect(() => {
-        document.documentElement.style.setProperty('--font-scale', fontScale);
-        localStorage.setItem('fontScale', fontScale);
-    }, [fontScale]);
+        const scale = isLargeFont ? 1.5 : 1;
+        document.documentElement.style.setProperty('--font-scale', scale);
+        localStorage.setItem('isLargeFont', JSON.stringify(isLargeFont));
+    }, [isLargeFont]);
 
     // Handle cancellation via URL parameter
     useEffect(() => {
@@ -134,28 +135,11 @@ function App() {
                 <div className="user-profile">
                     <div className="accessibility-controls">
                         <button
-                            className="font-control-btn"
-                            onClick={() => setFontScale(1)}
-                            title="Letra normal"
-                            style={{ fontSize: '14px' }}
+                            className={`font-control-btn single-btn ${isLargeFont ? 'active' : ''}`}
+                            onClick={() => setIsLargeFont(!isLargeFont)}
+                            title={isLargeFont ? "Tamaño de letra normal" : "Aumentar tamaño de letra"}
                         >
-                            A
-                        </button>
-                        <button
-                            className="font-control-btn"
-                            onClick={() => setFontScale(1.2)}
-                            title="Letra grande"
-                            style={{ fontSize: '18px' }}
-                        >
-                            A
-                        </button>
-                        <button
-                            className="font-control-btn"
-                            onClick={() => setFontScale(1.4)}
-                            title="Letra muy grande"
-                            style={{ fontSize: '22px' }}
-                        >
-                            A
+                            A+
                         </button>
                     </div>
                     <button

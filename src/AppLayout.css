@@ -53,12 +53,18 @@
     color: var(--color-text-primary);
     font-weight: 700;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 4px;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    font-size: 1.1rem;
 }
 
-.font-control-btn:hover {
+.font-control-btn.active {
+    background: var(--color-accent-primary);
+    color: white;
+}
+
+.font-control-btn:hover:not(.active) {
     background: var(--color-border);
 }
 
