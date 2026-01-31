@@ -56,15 +56,13 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
                                                     </div>
                                                 )}
                                             </div>
-                                            {isAdmin && (
-                                                <button
-                                                    className="btn-delete-res"
-                                                    onClick={() => handleDelete(res.id, res.customer_name)}
-                                                    title="Eliminar reserva"
-                                                >
-                                                    BORRAR
-                                                </button>
-                                            )}
+                                            <button
+                                                className="btn-delete-res"
+                                                onClick={() => handleDelete(res.id, res.customer_name)}
+                                                title={isAdmin ? "Eliminar reserva" : "Cancelar reserva"}
+                                            >
+                                                {isAdmin ? 'BORRAR' : 'CANCELAR'}
+                                            </button>
                                         </div>
                                     ))}
                             </div>
