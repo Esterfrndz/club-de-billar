@@ -4,20 +4,26 @@ import { ReservationWizard } from './components/ReservationWizard'
 import { AccessPortal } from './components/AccessPortal'
 import { LoginModal } from './components/LoginModal'
 import { AdminCalendarView } from './components/AdminCalendarView'
+import { MemberManager } from './components/MemberManager'
 import { useReservations } from './hooks/useReservations'
 import { useAuth } from './hooks/useAuth'
+import { useMembers } from './hooks/useMembers'
 import './AppLayout.css'
 
 function App() {
     const { reservations, addReservation, deleteReservation, checkAvailability } = useReservations();
     const { user, login, logout } = useAuth();
+    const { members, addMember, deleteMember, loading: membersLoading } = useMembers();
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
-    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario'
+    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario', 'socios'
     const [isPortalLocked, setIsPortalLocked] = useState(() => {
         const saved = localStorage.getItem('accessGranted');
         return saved !== 'true';
+    });
+    const [memberName, setMemberName] = useState(() => {
+        return localStorage.getItem('memberName') || '';
     });
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
@@ -132,8 +138,10 @@ function App() {
         }
     };
 
-    const handleAccessGranted = () => {
+    const handleAccessGranted = (name) => {
         localStorage.setItem('accessGranted', 'true');
+        localStorage.setItem('memberName', name);
+        setMemberName(name);
         setIsPortalLocked(false);
     };
 
@@ -166,13 +174,15 @@ function App() {
                         {user ? (
                             <div className="admin-menu">
                                 <div className="user-avatar">👤</div>
-                                <span>Admin</span>
+                                <span className="admin-name">Admin</span>
                                 <button className="logout-btn" onClick={logout} title="Cerrar sesión">SALIR</button>
                             </div>
                         ) : (
-                            <button className="login-trigger-btn" onClick={() => setIsLoginOpen(true)}>
-                                Iniciar sesión
-                            </button>
+                            <div className="visitor-info">
+                                <button className="login-trigger-btn" onClick={() => setIsLoginOpen(true)}>
+                                    Iniciar sesión
+                                </button>
+                            </div>
                         )}
                     </div>
                 </nav>
@@ -182,7 +192,7 @@ function App() {
                     <div className="hero-content">
                         <div className="hero-icon">🏢</div>
                         <div className="hero-details">
-                            <h1>Club de billar Paterna</h1>
+                            <h1>{memberName ? `Bienvenido ${memberName}` : 'Club de billar Paterna'}</h1>
                             <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
                                 {isOpen ? 'Abierto' : 'Cerrado'}
                             </span>
@@ -206,12 +216,20 @@ function App() {
                         SOBRE NOSOTROS
                     </button>
                     {user && (
-                        <button
-                            className={`tab-link-calendario ${activeTab === 'calendario' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('calendario')}
-                        >
-                            CALENDARIO
-                        </button>
+                        <>
+                            <button
+                                className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('calendario')}
+                            >
+                                CALENDARIO
+                            </button>
+                            <button
+                                className={`tab-link ${activeTab === 'socios' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('socios')}
+                            >
+                                SOCIOS
+                            </button>
+                        </>
                     )}
                 </div>
 
@@ -245,6 +263,15 @@ function App() {
                         <AdminCalendarView
                             reservations={reservations}
                             onDelete={deleteReservation}
+                        />
+                    )}
+
+                    {activeTab === 'socios' && (
+                        <MemberManager
+                            members={members}
+                            onAddMember={addMember}
+                            onDeleteMember={deleteMember}
+                            loading={membersLoading}
                         />
                     )}
                 </main>

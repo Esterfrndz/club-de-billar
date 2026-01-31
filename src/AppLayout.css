@@ -27,10 +27,20 @@
     gap: 12px;
 }
 
-.admin-menu {
+.admin-menu,
+.visitor-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+}
+
+.welcome-name {
+    font-size: 14px;
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.admin-menu {
     background: var(--color-bg-secondary);
     padding: 4px 12px;
     border-radius: 20px;

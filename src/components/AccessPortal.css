@@ -11,7 +11,11 @@
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.access-portal-overlay.access-granted {
+    background: rgba(15, 23, 42, 0.95);
 }
 
 .access-portal-overlay.fade-out {
@@ -114,6 +118,62 @@
     font-size: 14px;
     margin-top: 20px;
     font-weight: 500;
+}
+
+/* Welcome Message Styles */
+.welcome-message {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.welcome-icon {
+    font-size: 80px;
+    margin-bottom: 16px;
+}
+
+.member-welcome-name {
+    font-size: 32px !important;
+    color: #3b82f6 !important;
+    font-weight: 800 !important;
+    margin-top: 8px;
+    letter-spacing: -0.02em;
+}
+
+.loading-bar-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+    background: #3b82f6;
+    animation: loadingProgress 2s linear forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loadingProgress {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
 }
 
 /* Shake Animation */
