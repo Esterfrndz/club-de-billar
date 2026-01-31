@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { TableList } from './components/TableList'
-import { ReservationWizard } from './components/ReservationWizard'
-import { AccessPortal } from './components/AccessPortal'
-import { AdminCalendarView } from './components/AdminCalendarView'
-import { MemberManager } from './components/MemberManager'
-import { useReservations } from './hooks/useReservations'
-import { useMembers } from './hooks/useMembers'
+import { TableList } from './components/TableList.jsx'
+import { ReservationWizard } from './components/ReservationWizard.jsx'
+import { AccessPortal } from './components/AccessPortal.jsx'
+import { AdminCalendarView } from './components/AdminCalendarView.jsx'
+import { MemberManager } from './components/MemberManager.jsx'
+import { useReservations } from './hooks/useReservations.js'
+import { useMembers } from './hooks/useMembers.js'
 import './AppLayout.css'
 
 function App() {
