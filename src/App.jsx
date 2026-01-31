@@ -19,14 +19,14 @@ function App() {
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario', 'socios'
     const [isPortalLocked, setIsPortalLocked] = useState(() => {
-        const saved = localStorage.getItem('accessGranted');
+        const saved = sessionStorage.getItem('accessGranted');
         return saved !== 'true';
     });
     const [memberName, setMemberName] = useState(() => {
-        return localStorage.getItem('memberName') || '';
+        return sessionStorage.getItem('memberName') || '';
     });
     const [memberCode, setMemberCode] = useState(() => {
-        return localStorage.getItem('memberCode') || '';
+        return sessionStorage.getItem('memberCode') || '';
     });
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
@@ -116,9 +116,9 @@ function App() {
     };
 
     const handleAccessGranted = (name, code) => {
-        localStorage.setItem('accessGranted', 'true');
-        localStorage.setItem('memberName', name);
-        localStorage.setItem('memberCode', code);
+        sessionStorage.setItem('accessGranted', 'true');
+        sessionStorage.setItem('memberName', name);
+        sessionStorage.setItem('memberCode', code);
         setMemberName(name);
         setMemberCode(code);
         setIsPortalLocked(false);
