@@ -24,6 +24,9 @@ function App() {
     const [memberCode, setMemberCode] = useState(() => {
         return sessionStorage.getItem('memberCode') || '';
     });
+    const [memberPhoto, setMemberPhoto] = useState(() => {
+        return sessionStorage.getItem('memberPhoto') || '';
+    });
     const [isAdmin, setIsAdmin] = useState(() => {
         const saved = sessionStorage.getItem('isAdmin');
         return saved === 'true';
@@ -115,14 +118,16 @@ function App() {
         }
     };
 
-    const handleAccessGranted = (name, code, adminStatus) => {
+    const handleAccessGranted = (name, code, adminStatus, photoUrl) => {
         sessionStorage.setItem('accessGranted', 'true');
         sessionStorage.setItem('memberName', name);
         sessionStorage.setItem('memberCode', code);
         sessionStorage.setItem('isAdmin', adminStatus ? 'true' : 'false');
+        sessionStorage.setItem('memberPhoto', photoUrl || '');
         setMemberName(name);
         setMemberCode(code);
         setIsAdmin(adminStatus || false);
+        setMemberPhoto(photoUrl || '');
         setIsPortalLocked(false);
     };
 
@@ -154,7 +159,11 @@ function App() {
                         </button>
                         {memberName && (
                             <div className="admin-menu">
-                                <div className="user-avatar">👤</div>
+                                {memberPhoto ? (
+                                    <img src={memberPhoto} alt={memberName} className="user-avatar-img" />
+                                ) : (
+                                    <div className="user-avatar">👤</div>
+                                )}
                                 <span className="admin-name">{memberName}</span>
                                 <button className="logout-btn" onClick={() => {
                                     sessionStorage.clear();
@@ -195,7 +204,7 @@ function App() {
                         className={`tab-link ${activeTab === 'nosotros' ? 'active' : ''}`}
                         onClick={() => setActiveTab('nosotros')}
                     >
-                        SOBRE NOSOTROS
+                        SOBRE MI
                     </button>
                     {(isAdmin || memberName) && (
                         <button
@@ -236,7 +245,7 @@ function App() {
 
                     {activeTab === 'nosotros' && (
                         <div style={{ padding: '40px 24px', textAlign: 'center', color: '#666' }}>
-                            <h2>Sobre Nosotros</h2>
+                            <h2>Sobre Mi</h2>
                             <p>Bienvenidos al Club de billar Paterna. Un espacio dedicado al deporte y la convivencia.</p>
                         </div>
                     )}

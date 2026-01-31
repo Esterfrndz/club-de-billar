@@ -77,17 +77,33 @@ export function MemberManager({ members, onAddMember, onDeleteMember, loading })
                     <table>
                         <thead>
                             <tr>
+                                <th>Foto</th>
                                 <th>Nombre</th>
                                 <th>Código de Acceso</th>
+                                <th>Admin</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {members.map(member => (
                                 <tr key={member.id}>
+                                    <td>
+                                        {member.photo_url ? (
+                                            <img src={member.photo_url} alt={member.name} className="member-photo" />
+                                        ) : (
+                                            <div className="member-photo-placeholder">👤</div>
+                                        )}
+                                    </td>
                                     <td>{member.name}</td>
                                     <td>
                                         <span className="access-code-badge">{member.access_code}</span>
+                                    </td>
+                                    <td>
+                                        {member.is_admin ? (
+                                            <span className="admin-badge">✓ Admin</span>
+                                        ) : (
+                                            <span className="regular-badge">Socio</span>
+                                        )}
                                     </td>
                                     <td>
                                         <button
@@ -105,7 +121,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, loading })
                             ))}
                             {members.length === 0 && (
                                 <tr>
-                                    <td colSpan="3" className="empty-row">No hay socios registrados.</td>
+                                    <td colSpan="5" className="empty-row">No hay socios registrados.</td>
                                 </tr>
                             )}
                         </tbody>

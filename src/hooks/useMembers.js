@@ -69,7 +69,7 @@ export function useMembers() {
         try {
             const { data, error } = await supabase
                 .from('members')
-                .select('name, access_code, is_admin')
+                .select('name, access_code, is_admin, photo_url')
                 .eq('access_code', code)
                 .single();
 
@@ -78,7 +78,8 @@ export function useMembers() {
                 success: true,
                 name: data.name,
                 code: data.access_code,
-                isAdmin: data.is_admin || false
+                isAdmin: data.is_admin || false,
+                photoUrl: data.photo_url || null
             };
         } catch (err) {
             return { success: false, error: "Error al validar el código" };

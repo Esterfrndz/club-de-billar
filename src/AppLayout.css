@@ -143,6 +143,14 @@
     color: var(--color-text-secondary);
 }
 
+.user-avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+}
+
 /* Hero Section */
 .hero-section {
     padding: var(--spacing-xl) var(--spacing-lg);
