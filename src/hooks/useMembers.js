@@ -74,7 +74,7 @@ export function useMembers() {
                 .single();
 
             if (error) return { success: false, error: "Código incorrecto" };
-            return { success: true, name: data.name };
+            return { success: true, name: data.name, code: code };
         } catch (err) {
             return { success: false, error: "Error al validar el código" };
         }

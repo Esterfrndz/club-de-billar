@@ -9,23 +9,17 @@ import './ReservationWizard.css';
   - tableData: object { id, name, colorClass }
   - checkAvailability: function(tableId, date, time) -> boolean
 */
-export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont }) {
+export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberCode }) {
     const [step, setStep] = useState(1);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
 
-    // Step 2 Data
-    const [formData, setFormData] = useState({
-        name: '',
-        memberId: '',
-        mobile: ''
-    });
+    // No step 2 formData needed now
 
     // Reset when opening
     useEffect(() => {
         if (isOpen) {
             setStep(1);
-            setFormData({ name: '', memberId: '', mobile: '' });
             setTime('');
             const today = new Date().toISOString().split('T')[0];
             setDate(today);
@@ -34,8 +28,8 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
 
     if (!isOpen || !tableData) return null;
 
-    const handleNext = () => setStep(prev => prev + 1);
-    const handleBack = () => setStep(prev => prev - 1);
+    const handleNext = () => setStep(3); // Jump to summary
+    const handleBack = () => setStep(1); // Back to time selection
 
     const handleSubmit = () => {
         onSubmit({
@@ -48,7 +42,6 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
 
     // Helper to checking validity for steps
     const isStep1Valid = date && time;
-    const isStep2Valid = formData.name && formData.memberId && formData.mobile;
 
     return (
         <div className="wizard-overlay">
@@ -66,11 +59,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                         <button className="close-wizard-btn" onClick={onClose}>&times;</button>
                     </div>
                     <div className="progress-steps">
-                        <div className={`step-circle ${step >= 1 ? 'active' : ''}`}>1</div>
+                        <div className={`step-circle ${step === 1 ? 'active' : ''}`}>1</div>
                         <div className="step-line"></div>
-                        <div className={`step-circle ${step >= 2 ? 'active' : ''}`}>2</div>
-                        <div className="step-line"></div>
-                        <div className={`step-circle ${step >= 3 ? 'active' : ''}`}>3</div>
+                        <div className={`step-circle ${step === 3 ? 'active' : ''}`}>2</div>
                     </div>
                 </div>
 
@@ -127,45 +118,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                             </div>
                         )}
 
-                        {step === 2 && (
-                            <div className="step-content">
-                                <h2>Detalles de la reserva</h2>
-
-                                <div className="form-group">
-                                    <label>Nombre completo</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="Ej. Juan Pérez"
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Num. de Socio</label>
-                                    <input
-                                        type="text"
-                                        value={formData.memberId}
-                                        onChange={e => setFormData({ ...formData, memberId: e.target.value })}
-                                        placeholder="Ej. 12345"
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Núm. móvil</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.mobile}
-                                        onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                                        placeholder="600 000 000"
-                                    />
-                                </div>
-
-                                <div className="step-actions">
-                                    <button className="btn-next" disabled={!isStep2Valid} onClick={handleNext}>Continuar</button>
-                                </div>
-                            </div>
-                        )}
+                        {/* Step 2 removed */}
 
                         {step === 3 && (
                             <div className="step-content">
@@ -177,9 +130,8 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <p><strong>Fecha:</strong> {formatDate(date)}</p>
                                     <p><strong>Hora:</strong> {time}</p>
                                     <hr />
-                                    <p><strong>Nombre:</strong> {formData.name}</p>
-                                    <p><strong>Socio:</strong> {formData.memberId}</p>
-                                    <p><strong>Móvil:</strong> {formData.mobile}</p>
+                                    <p><strong>Nombre:</strong> {memberName}</p>
+                                    <p><strong>Socio:</strong> {memberCode}</p>
                                 </div>
 
                                 <div className="step-actions">

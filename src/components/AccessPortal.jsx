@@ -19,7 +19,7 @@ export function AccessPortal({ onAccessGranted }) {
             setWelcomeName(result.name);
             setIsAnimating(true);
             setTimeout(() => {
-                onAccessGranted(result.name);
+                onAccessGranted(result.name, code);
             }, 2000); // Give time for the welcome message
         } else {
             setError(true);
