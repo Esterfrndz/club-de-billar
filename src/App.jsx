@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { TableList } from './components/TableList'
 import { ReservationWizard } from './components/ReservationWizard'
+import { AccessPortal } from './components/AccessPortal'
 import { LoginModal } from './components/LoginModal'
 import { AdminCalendarView } from './components/AdminCalendarView'
 import { useReservations } from './hooks/useReservations'
@@ -14,6 +15,10 @@ function App() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario'
+    const [isPortalLocked, setIsPortalLocked] = useState(() => {
+        const saved = localStorage.getItem('accessGranted');
+        return saved !== 'true';
+    });
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
         return saved ? JSON.parse(saved) : false;
@@ -127,130 +132,140 @@ function App() {
         }
     };
 
+    const handleAccessGranted = () => {
+        localStorage.setItem('accessGranted', 'true');
+        setIsPortalLocked(false);
+    };
+
     return (
-        <div className="app-container">
-            {/* Top Navigation */}
-            <nav className="top-nav">
-                <div className="brand-name">Club de billar Paterna</div>
-                <div className="user-profile">
-                    <div className="accessibility-controls">
-                        <button
-                            className={`font-control-btn single-btn ${isLargeFont ? 'active' : ''}`}
-                            onClick={() => setIsLargeFont(!isLargeFont)}
-                            title={isLargeFont ? "Tamaño de letra normal" : "Aumentar tamaño de letra"}
-                        >
-                            A
-                        </button>
-                    </div>
-                    <button
-                        className="theme-toggle-btn"
-                        onClick={() => setDarkMode(!darkMode)}
-                        title={darkMode ? "Pasar a modo claro" : "Pasar a modo oscuro"}
-                    >
-                        {darkMode ? '☀️' : '🌙'}
-                    </button>
-                    {user ? (
-                        <div className="admin-menu">
-                            <div className="user-avatar">👤</div>
-                            <span>Admin</span>
-                            <button className="logout-btn" onClick={logout} title="Cerrar sesión">SALIR</button>
+        <>
+            {isPortalLocked && (
+                <AccessPortal onAccessGranted={handleAccessGranted} />
+            )}
+            <div className="app-container">
+                {/* Top Navigation */}
+                <nav className="top-nav">
+                    <div className="brand-name">Club de billar Paterna</div>
+                    <div className="user-profile">
+                        <div className="accessibility-controls">
+                            <button
+                                className={`font-control-btn single-btn ${isLargeFont ? 'active' : ''}`}
+                                onClick={() => setIsLargeFont(!isLargeFont)}
+                                title={isLargeFont ? "Tamaño de letra normal" : "Aumentar tamaño de letra"}
+                            >
+                                A
+                            </button>
                         </div>
-                    ) : (
-                        <button className="login-trigger-btn" onClick={() => setIsLoginOpen(true)}>
-                            Iniciar sesión
+                        <button
+                            className="theme-toggle-btn"
+                            onClick={() => setDarkMode(!darkMode)}
+                            title={darkMode ? "Pasar a modo claro" : "Pasar a modo oscuro"}
+                        >
+                            {darkMode ? '☀️' : '🌙'}
+                        </button>
+                        {user ? (
+                            <div className="admin-menu">
+                                <div className="user-avatar">👤</div>
+                                <span>Admin</span>
+                                <button className="logout-btn" onClick={logout} title="Cerrar sesión">SALIR</button>
+                            </div>
+                        ) : (
+                            <button className="login-trigger-btn" onClick={() => setIsLoginOpen(true)}>
+                                Iniciar sesión
+                            </button>
+                        )}
+                    </div>
+                </nav>
+
+                {/* Hero Section */}
+                <div className="hero-section">
+                    <div className="hero-content">
+                        <div className="hero-icon">🏢</div>
+                        <div className="hero-details">
+                            <h1>Club de billar Paterna</h1>
+                            <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
+                                {isOpen ? 'Abierto' : 'Cerrado'}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* Tabs */}
+                <div className="tabs-nav">
+                    <button
+                        className={`tab-link ${activeTab === 'servicios' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('servicios')}
+                    >
+                        SERVICIOS
+                    </button>
+                    <button
+                        className={`tab-link ${activeTab === 'nosotros' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('nosotros')}
+                    >
+                        SOBRE NOSOTROS
+                    </button>
+                    {user && (
+                        <button
+                            className={`tab-link-calendario ${activeTab === 'calendario' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('calendario')}
+                        >
+                            CALENDARIO
                         </button>
                     )}
                 </div>
-            </nav>
 
-            {/* Hero Section */}
-            <div className="hero-section">
-                <div className="hero-content">
-                    <div className="hero-icon">🏢</div>
-                    <div className="hero-details">
-                        <h1>Club de billar Paterna</h1>
-                        <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
-                            {isOpen ? 'Abierto' : 'Cerrado'}
-                        </span>
-                    </div>
-                </div>
-
-            </div>
-
-            {/* Tabs */}
-            <div className="tabs-nav">
-                <button
-                    className={`tab-link ${activeTab === 'servicios' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('servicios')}
-                >
-                    SERVICIOS
-                </button>
-                <button
-                    className={`tab-link ${activeTab === 'nosotros' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('nosotros')}
-                >
-                    SOBRE NOSOTROS
-                </button>
-                {user && (
-                    <button
-                        className={`tab-link-calendario ${activeTab === 'calendario' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('calendario')}
-                    >
-                        CALENDARIO
-                    </button>
-                )}
-            </div>
-
-            <main>
-                {activeTab === 'servicios' && (
-                    <>
-                        <div className="section-header">
-                            <h2 className="section-title">Servicios</h2>
-                            <div className="search-container">
-                                <span className="search-icon">🔍</span>
-                                <input
-                                    type="text"
-                                    placeholder="Buscar..."
-                                    className="search-input"
-                                />
+                <main>
+                    {activeTab === 'servicios' && (
+                        <>
+                            <div className="section-header">
+                                <h2 className="section-title">Servicios</h2>
+                                <div className="search-container">
+                                    <span className="search-icon">🔍</span>
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar..."
+                                        className="search-input"
+                                    />
+                                </div>
                             </div>
+
+                            <TableList tables={tablesData} onReserve={handleOpenReserve} />
+                        </>
+                    )}
+
+                    {activeTab === 'nosotros' && (
+                        <div style={{ padding: '40px 24px', textAlign: 'center', color: '#666' }}>
+                            <h2>Sobre Nosotros</h2>
+                            <p>Bienvenidos al Club de billar Paterna. Un espacio dedicado al deporte y la convivencia.</p>
                         </div>
+                    )}
 
-                        <TableList tables={tablesData} onReserve={handleOpenReserve} />
-                    </>
-                )}
+                    {activeTab === 'calendario' && user && (
+                        <AdminCalendarView
+                            reservations={reservations}
+                            onDelete={deleteReservation}
+                        />
+                    )}
+                </main>
 
-                {activeTab === 'nosotros' && (
-                    <div style={{ padding: '40px 24px', textAlign: 'center', color: '#666' }}>
-                        <h2>Sobre Nosotros</h2>
-                        <p>Bienvenidos al Club de billar Paterna. Un espacio dedicado al deporte y la convivencia.</p>
-                    </div>
-                )}
+                <ReservationWizard
+                    isOpen={isWizardOpen}
+                    onClose={handleCloseWizard}
+                    onSubmit={handleConfirmReservation}
+                    tableData={selectedTable}
+                    checkAvailability={checkAvailability}
+                    isLargeFont={isLargeFont}
+                    setIsLargeFont={setIsLargeFont}
+                />
 
-                {activeTab === 'calendario' && user && (
-                    <AdminCalendarView
-                        reservations={reservations}
-                        onDelete={deleteReservation}
-                    />
-                )}
-            </main>
-
-            <ReservationWizard
-                isOpen={isWizardOpen}
-                onClose={handleCloseWizard}
-                onSubmit={handleConfirmReservation}
-                tableData={selectedTable}
-                checkAvailability={checkAvailability}
-                isLargeFont={isLargeFont}
-                setIsLargeFont={setIsLargeFont}
-            />
-
-            <LoginModal
-                isOpen={isLoginOpen}
-                onClose={() => setIsLoginOpen(false)}
-                onLogin={login}
-            />
-        </div>
+                <LoginModal
+                    isOpen={isLoginOpen}
+                    onClose={() => setIsLoginOpen(false)}
+                    onLogin={login}
+                />
+            </div>
+        </>
     );
 }
 
