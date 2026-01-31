@@ -12,9 +12,12 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
     // Sort dates
     const sortedDates = Object.keys(groupedReservations).sort();
 
-    const handleDelete = (id, info) => {
+    const handleDelete = async (id, info) => {
         if (window.confirm(`¿Estás seguro de que quieres eliminar la reserva de ${info}?`)) {
-            onDelete(id);
+            const result = await onDelete(id);
+            if (result && !result.success) {
+                alert(`Error al eliminar: ${result.error}`);
+            }
         }
     };
 
