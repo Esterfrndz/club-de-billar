@@ -2,20 +2,16 @@ import { useState, useEffect } from 'react'
 import { TableList } from './components/TableList'
 import { ReservationWizard } from './components/ReservationWizard'
 import { AccessPortal } from './components/AccessPortal'
-import { LoginModal } from './components/LoginModal'
 import { AdminCalendarView } from './components/AdminCalendarView'
 import { MemberManager } from './components/MemberManager'
 import { useReservations } from './hooks/useReservations'
-import { useAuth } from './hooks/useAuth'
 import { useMembers } from './hooks/useMembers'
 import './AppLayout.css'
 
 function App() {
     const { reservations, addReservation, deleteReservation, checkAvailability } = useReservations();
-    const { user, login, logout } = useAuth();
     const { members, addMember, deleteMember, loading: membersLoading } = useMembers();
     const [isWizardOpen, setIsWizardOpen] = useState(false);
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario', 'socios'
     const [isPortalLocked, setIsPortalLocked] = useState(() => {
@@ -27,6 +23,10 @@ function App() {
     });
     const [memberCode, setMemberCode] = useState(() => {
         return sessionStorage.getItem('memberCode') || '';
+    });
+    const [isAdmin, setIsAdmin] = useState(() => {
+        const saved = sessionStorage.getItem('isAdmin');
+        return saved === 'true';
     });
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
@@ -115,12 +115,14 @@ function App() {
         }
     };
 
-    const handleAccessGranted = (name, code) => {
+    const handleAccessGranted = (name, code, adminStatus) => {
         sessionStorage.setItem('accessGranted', 'true');
         sessionStorage.setItem('memberName', name);
         sessionStorage.setItem('memberCode', code);
+        sessionStorage.setItem('isAdmin', adminStatus ? 'true' : 'false');
         setMemberName(name);
         setMemberCode(code);
+        setIsAdmin(adminStatus || false);
         setIsPortalLocked(false);
     };
 
@@ -144,23 +146,24 @@ function App() {
                             </button>
                         </div>
                         <button
-                            className="theme-toggle-btn"
+                            className={`theme-toggle ${darkMode ? 'dark' : 'light'}`}
                             onClick={() => setDarkMode(!darkMode)}
-                            title={darkMode ? "Pasar a modo claro" : "Pasar a modo oscuro"}
+                            title={darkMode ? 'Modo claro' : 'Modo oscuro'}
                         >
                             {darkMode ? '☀️' : '🌙'}
                         </button>
-                        {user ? (
+                        {memberName && (
                             <div className="admin-menu">
                                 <div className="user-avatar">👤</div>
-                                <span className="admin-name">Admin</span>
-                                <button className="logout-btn" onClick={logout} title="Cerrar sesión">SALIR</button>
-                            </div>
-                        ) : (
-                            <div className="visitor-info">
-                                <button className="login-trigger-btn" onClick={() => setIsLoginOpen(true)}>
-                                    Iniciar sesión
-                                </button>
+                                <span className="admin-name">{memberName}</span>
+                                <button className="logout-btn" onClick={() => {
+                                    sessionStorage.clear();
+                                    setIsPortalLocked(true);
+                                    setMemberName('');
+                                    setMemberCode('');
+                                    setIsAdmin(false);
+                                    setActiveTab('servicios'); // Reset tab on logout
+                                }} title="Cerrar sesión">SALIR</button>
                             </div>
                         )}
                     </div>
@@ -194,7 +197,7 @@ function App() {
                     >
                         SOBRE NOSOTROS
                     </button>
-                    {(user || memberName) && (
+                    {(isAdmin || memberName) && (
                         <button
                             className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
                             onClick={() => setActiveTab('calendario')}
@@ -202,7 +205,7 @@ function App() {
                             RESERVAS
                         </button>
                     )}
-                    {user && (
+                    {isAdmin && (
                         <button
                             className={`tab-link ${activeTab === 'socios' ? 'active' : ''}`}
                             onClick={() => setActiveTab('socios')}
@@ -238,15 +241,15 @@ function App() {
                         </div>
                     )}
 
-                    {activeTab === 'calendario' && (user || memberName) && (
+                    {activeTab === 'calendario' && (isAdmin || memberName) && (
                         <AdminCalendarView
-                            reservations={user ? reservations : reservations.filter(r => r.member_id === memberCode)}
+                            reservations={isAdmin ? reservations : reservations.filter(r => r.member_id === memberCode)}
                             onDelete={deleteReservation}
-                            isAdmin={!!user}
+                            isAdmin={isAdmin}
                         />
                     )}
 
-                    {activeTab === 'socios' && (
+                    {activeTab === 'socios' && isAdmin && (
                         <MemberManager
                             members={members}
                             onAddMember={addMember}
@@ -266,12 +269,6 @@ function App() {
                     setIsLargeFont={setIsLargeFont}
                     memberName={memberName}
                     memberCode={memberCode}
-                />
-
-                <LoginModal
-                    isOpen={isLoginOpen}
-                    onClose={() => setIsLoginOpen(false)}
-                    onLogin={login}
                 />
             </div>
         </>
