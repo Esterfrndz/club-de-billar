@@ -35,8 +35,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
         onSubmit({
             tableId: tableData.id,
             date,
-            time,
-            ...formData
+            time
         });
     };
 
