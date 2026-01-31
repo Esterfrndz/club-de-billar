@@ -194,21 +194,21 @@ function App() {
                     >
                         SOBRE NOSOTROS
                     </button>
+                    {(user || memberName) && (
+                        <button
+                            className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('calendario')}
+                        >
+                            RESERVAS
+                        </button>
+                    )}
                     {user && (
-                        <>
-                            <button
-                                className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('calendario')}
-                            >
-                                CALENDARIO
-                            </button>
-                            <button
-                                className={`tab-link ${activeTab === 'socios' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('socios')}
-                            >
-                                SOCIOS
-                            </button>
-                        </>
+                        <button
+                            className={`tab-link ${activeTab === 'socios' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('socios')}
+                        >
+                            SOCIOS
+                        </button>
                     )}
                 </div>
 
@@ -238,10 +238,11 @@ function App() {
                         </div>
                     )}
 
-                    {activeTab === 'calendario' && user && (
+                    {activeTab === 'calendario' && (user || memberName) && (
                         <AdminCalendarView
-                            reservations={reservations}
+                            reservations={user ? reservations : reservations.filter(r => r.member_id === memberCode)}
                             onDelete={deleteReservation}
+                            isAdmin={!!user}
                         />
                     )}
 

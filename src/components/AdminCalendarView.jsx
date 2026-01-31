@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './AdminCalendarView.css';
 
-export function AdminCalendarView({ reservations, onDelete }) {
+export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
     // Group reservations by date
     const groupedReservations = reservations.reduce((acc, res) => {
         if (!acc[res.date]) acc[res.date] = [];
@@ -21,14 +21,16 @@ export function AdminCalendarView({ reservations, onDelete }) {
     return (
         <div className="admin-calendar-container">
             <div className="calendar-header">
-                <h2>Lista de Reservas</h2>
-                <div className="reservation-count">{reservations.length} reservas en total</div>
+                <h2>{isAdmin ? 'Gestión de Reservas' : 'Mis Reservas'}</h2>
+                <div className="reservation-count">
+                    {isAdmin ? `${reservations.length} reservas en total` : `Tienes ${reservations.length} reservas`}
+                </div>
             </div>
 
             {reservations.length === 0 ? (
                 <div className="empty-calendar">
                     <div className="empty-icon">📅</div>
-                    <p>No hay reservas registradas todavía.</p>
+                    <p>{isAdmin ? 'No hay reservas registradas todavía.' : 'No tienes ninguna reserva registrada.'}</p>
                 </div>
             ) : (
                 <div className="calendar-content">
@@ -44,18 +46,22 @@ export function AdminCalendarView({ reservations, onDelete }) {
                                             <div className="res-details">
                                                 <div className="res-name">{res.customer_name}</div>
                                                 <div className="res-table">Mesa {res.table_id}</div>
-                                                <div className="res-meta">
-                                                    <span>Socio: {res.member_id || 'N/A'}</span>
-                                                    <span>Tel: {res.mobile || 'N/A'}</span>
-                                                </div>
+                                                {isAdmin && (
+                                                    <div className="res-meta">
+                                                        <span>Socio: {res.member_id || 'N/A'}</span>
+                                                        <span>Tel: {res.mobile || 'N/A'}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <button
-                                                className="btn-delete-res"
-                                                onClick={() => handleDelete(res.id, res.customer_name)}
-                                                title="Eliminar reserva"
-                                            >
-                                                BORRAR
-                                            </button>
+                                            {isAdmin && (
+                                                <button
+                                                    className="btn-delete-res"
+                                                    onClick={() => handleDelete(res.id, res.customer_name)}
+                                                    title="Eliminar reserva"
+                                                >
+                                                    BORRAR
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
                             </div>
