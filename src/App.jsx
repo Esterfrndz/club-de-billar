@@ -13,7 +13,7 @@ function App() {
     const { members, addMember, deleteMember, loading: membersLoading } = useMembers();
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
-    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'calendario', 'socios'
+    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'mis-reservas', 'todas-reservas', 'socios'
     const [isPortalLocked, setIsPortalLocked] = useState(() => {
         const saved = sessionStorage.getItem('accessGranted');
         return saved !== 'true';
@@ -208,10 +208,18 @@ function App() {
                     </button>
                     {(isAdmin || memberName) && (
                         <button
-                            className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('calendario')}
+                            className={`tab-link ${activeTab === 'mis-reservas' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('mis-reservas')}
                         >
-                            RESERVAS
+                            MIS RESERVAS
+                        </button>
+                    )}
+                    {isAdmin && (
+                        <button
+                            className={`tab-link ${activeTab === 'todas-reservas' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('todas-reservas')}
+                        >
+                            TODAS LAS RESERVAS
                         </button>
                     )}
                     {isAdmin && (
@@ -250,11 +258,19 @@ function App() {
                         </div>
                     )}
 
-                    {activeTab === 'calendario' && (isAdmin || memberName) && (
+                    {activeTab === 'mis-reservas' && (isAdmin || memberName) && (
                         <AdminCalendarView
-                            reservations={isAdmin ? reservations : reservations.filter(r => r.member_id === memberCode)}
+                            reservations={reservations.filter(r => r.member_id === memberCode)}
                             onDelete={deleteReservation}
-                            isAdmin={isAdmin}
+                            isAdmin={false}
+                        />
+                    )}
+
+                    {activeTab === 'todas-reservas' && isAdmin && (
+                        <AdminCalendarView
+                            reservations={reservations}
+                            onDelete={deleteReservation}
+                            isAdmin={true}
                         />
                     )}
 
