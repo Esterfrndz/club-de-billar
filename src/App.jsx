@@ -33,23 +33,22 @@ function App() {
 
     const handleGlobalUpdate = async (id, updates) => {
         const result = await updateMember(id, updates);
-        if (result.success) {
-            // Sincronizar con el estado global si es el usuario actual
-            const updatedMember = members.find(m => m.id === id);
-            const isSelf = id === memberId || (updatedMember && updatedMember.access_code === memberCode);
+        if (result.success && result.data) {
+            // Sincronizar con el estado global si es el usuario actual usando los datos frescos de Supabase
+            const isSelf = id === memberId || result.data.access_code === memberCode;
 
             if (isSelf) {
-                if (updates.name) {
-                    setMemberName(updates.name);
-                    sessionStorage.setItem('memberName', updates.name);
+                if (result.data.name) {
+                    setMemberName(result.data.name);
+                    sessionStorage.setItem('memberName', result.data.name);
                 }
-                if (updates.photo_url !== undefined) {
-                    setMemberPhoto(updates.photo_url || '');
-                    sessionStorage.setItem('memberPhoto', updates.photo_url || '');
+                if (result.data.photo_url !== undefined) {
+                    setMemberPhoto(result.data.photo_url || '');
+                    sessionStorage.setItem('memberPhoto', result.data.photo_url || '');
                 }
-                if (!memberId) {
-                    setMemberId(id);
-                    sessionStorage.setItem('memberId', id);
+                if (!memberId && result.data.id) {
+                    setMemberId(result.data.id);
+                    sessionStorage.setItem('memberId', result.data.id);
                 }
             }
         }
@@ -58,17 +57,17 @@ function App() {
 
     const handleGlobalUpload = async (id, file) => {
         const result = await uploadMemberPhoto(id, file);
-        if (result.success) {
-            const newPhotoUrl = result.data?.photo_url;
-            const updatedMember = members.find(m => m.id === id);
-            const isSelf = id === memberId || (updatedMember && updatedMember.access_code === memberCode);
+        if (result.success && result.data) {
+            const isSelf = id === memberId || result.data.access_code === memberCode;
 
-            if (isSelf && newPhotoUrl) {
-                setMemberPhoto(newPhotoUrl);
-                sessionStorage.setItem('memberPhoto', newPhotoUrl);
-                if (!memberId) {
-                    setMemberId(id);
-                    sessionStorage.setItem('memberId', id);
+            if (isSelf) {
+                const newPhotoUrl = result.data.photo_url;
+                setMemberPhoto(newPhotoUrl || '');
+                sessionStorage.setItem('memberPhoto', newPhotoUrl || '');
+
+                if (!memberId && result.data.id) {
+                    setMemberId(result.data.id);
+                    sessionStorage.setItem('memberId', result.data.id);
                 }
             }
         }
