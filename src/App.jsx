@@ -314,12 +314,12 @@ function App() {
                             className={`tab-link ${activeTab === 'mis-reservas' ? 'active' : ''}`}
                             onClick={() => setActiveTab('mis-reservas')}
                         >
-                            MIS RESERVAS
+                            MIS PARTIDAS
                         </button>
                     )}
                     {(isAdmin || memberName) && (
                         <button
-                            className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
+                            className={`tab-link-calendario ${activeTab === 'calendario' ? 'active' : ''}`}
                             onClick={() => setActiveTab('calendario')}
                         >
                             CALENDARIO
@@ -417,7 +417,7 @@ function App() {
                     memberCode={memberCode}
                     memberNumber={memberNumber}
                 />
-            </div>
+            </div >
         </>
     );
 }
