@@ -10,7 +10,7 @@ import './AppLayout.css'
 
 function App() {
     const { reservations, addReservation, deleteReservation, checkAvailability } = useReservations();
-    const { members, addMember, deleteMember, updateMember, loading: membersLoading } = useMembers();
+    const { members, addMember, deleteMember, updateMember, uploadMemberPhoto, loading: membersLoading } = useMembers();
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
     const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'mis-reservas', 'todas-reservas', 'socios'
@@ -280,6 +280,7 @@ function App() {
                             onAddMember={addMember}
                             onDeleteMember={deleteMember}
                             onUpdateMember={updateMember}
+                            onUploadPhoto={uploadMemberPhoto}
                             loading={membersLoading}
                         />
                     )}

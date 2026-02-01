@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import './MemberManager.css';
 
-export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMember, loading }) {
+export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMember, onUploadPhoto, loading }) {
     const [newName, setNewName] = useState('');
     const [isSeeding, setIsSeeding] = useState(false);
     const [editingUrls, setEditingUrls] = useState({});
+    const [uploadingId, setUploadingId] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,9 +28,27 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
 
         const result = await onUpdateMember(id, { photo_url: url });
         if (result.success) {
-            // Success alert or some feedback
+            // Clear editing state for this ID
+            setEditingUrls(prev => {
+                const next = { ...prev };
+                delete next[id];
+                return next;
+            });
         } else {
             alert('Error al actualizar: ' + result.error);
+        }
+    };
+
+    const handleFileChange = async (memberId, e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingId(memberId);
+        const result = await onUploadPhoto(memberId, file);
+        setUploadingId(null);
+
+        if (!result.success) {
+            alert('Error al subir la foto: ' + result.error + '\n\nIMPORTANTE: Asegúrate de que el bucket "member-photos" existe en Supabase y es público.');
         }
     };
 
@@ -95,7 +114,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                         <thead>
                             <tr>
                                 <th>Foto</th>
-                                <th>Nombre / URL Imagen</th>
+                                <th>Nombre / Gestión Imagen</th>
                                 <th>Código</th>
                                 <th>Admin</th>
                                 <th>Acciones</th>
@@ -105,30 +124,48 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                             {members.map(member => (
                                 <tr key={member.id}>
                                     <td>
-                                        {member.photo_url ? (
-                                            <img src={member.photo_url} alt={member.name} className="member-photo" />
-                                        ) : (
-                                            <div className="member-photo-placeholder">👤</div>
-                                        )}
+                                        <div className="avatar-preview-container">
+                                            {member.photo_url ? (
+                                                <img src={member.photo_url} alt={member.name} className="member-photo" />
+                                            ) : (
+                                                <div className="member-photo-placeholder">👤</div>
+                                            )}
+                                            {uploadingId === member.id && (
+                                                <div className="upload-overlay">⏳</div>
+                                            )}
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="member-info-edit">
                                             <strong>{member.name}</strong>
-                                            <div className="photo-url-edit">
-                                                <input
-                                                    type="text"
-                                                    placeholder="URL de la foto..."
-                                                    defaultValue={member.photo_url || ''}
-                                                    onChange={(e) => handleUrlChange(member.id, e.target.value)}
-                                                    className="url-input"
-                                                />
-                                                <button
-                                                    onClick={() => handleSaveUrl(member.id)}
-                                                    className="btn-save-url"
-                                                    disabled={editingUrls[member.id] === undefined || editingUrls[member.id] === member.photo_url}
-                                                >
-                                                    OK
-                                                </button>
+                                            <div className="photo-actions">
+                                                <div className="photo-url-edit">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Pegar URL manualmente..."
+                                                        defaultValue={member.photo_url || ''}
+                                                        onChange={(e) => handleUrlChange(member.id, e.target.value)}
+                                                        className="url-input"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleSaveUrl(member.id)}
+                                                        className="btn-save-url"
+                                                        disabled={editingUrls[member.id] === undefined || editingUrls[member.id] === member.photo_url}
+                                                    >
+                                                        OK
+                                                    </button>
+                                                </div>
+                                                <div className="file-upload-section">
+                                                    <label className="btn-upload-file">
+                                                        📁 SUBIR ARCHIVO
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={(e) => handleFileChange(member.id, e)}
+                                                            className="hidden-file-input"
+                                                        />
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>

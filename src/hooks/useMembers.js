@@ -103,6 +103,32 @@ export function useMembers() {
         }
     };
 
+    const uploadMemberPhoto = async (id, file) => {
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${id}-${Math.random()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            // Upload to Supabase Storage
+            const { error: uploadError } = await supabase.storage
+                .from('member-photos')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('member-photos')
+                .getPublicUrl(filePath);
+
+            // Update member record with the new photo URL
+            return await updateMember(id, { photo_url: publicUrl });
+        } catch (err) {
+            console.error('Error uploading photo:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
     return {
         members,
         loading,
@@ -110,6 +136,7 @@ export function useMembers() {
         addMember,
         deleteMember,
         updateMember,
+        uploadMemberPhoto,
         checkAccess,
         refreshMembers: fetchMembers
     };

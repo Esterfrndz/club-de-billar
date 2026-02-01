@@ -282,3 +282,58 @@ td {
 .btn-save-url:hover {
     background: #059669;
 }
+
+.avatar-preview-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.photo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.file-upload-section {
+    display: flex;
+}
+
+.btn-upload-file {
+    background: #6366f1;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-upload-file:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.hidden-file-input {
+    display: none;
+}
