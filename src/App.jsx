@@ -8,6 +8,7 @@ import { useReservations } from './hooks/useReservations.js'
 import { useMembers } from './hooks/useMembers.js'
 import './AppLayout.css'
 
+// Main App Component
 function App() {
     const { reservations, addReservation, deleteReservation, checkAvailability } = useReservations();
     const { members, addMember, deleteMember, updateMember, uploadMemberPhoto, loading: membersLoading } = useMembers();
