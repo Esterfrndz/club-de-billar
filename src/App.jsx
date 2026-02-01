@@ -4,7 +4,7 @@ import { ReservationWizard } from './components/ReservationWizard.jsx'
 import { AccessPortal } from './components/AccessPortal.jsx'
 import { AdminCalendarView } from './components/AdminCalendarView.jsx'
 import { MemberManager } from './components/MemberManager.jsx'
-import { TodayCalendar } from './components/TodayCalendar.jsx'
+import { CalendarSection } from './components/CalendarSection.jsx'
 import { useReservations } from './hooks/useReservations.js'
 import { useMembers } from './hooks/useMembers.js'
 import './AppLayout.css'
@@ -396,7 +396,7 @@ function App() {
                     )}
 
                     {activeTab === 'calendario' && (
-                        <TodayCalendar />
+                        <CalendarSection />
                     )}
                 </main>
 
