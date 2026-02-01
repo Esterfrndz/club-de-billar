@@ -220,6 +220,12 @@ function App() {
         setIsPortalLocked(false);
     };
 
+    const currentUser = members.find(m =>
+        (memberId && String(m.id) === String(memberId)) ||
+        (memberCode && String(m.access_code) === String(memberCode))
+    );
+    const memberNumber = currentUser ? members.indexOf(currentUser) + 1 : null;
+
     return (
         <>
             {isPortalLocked && (
@@ -392,6 +398,7 @@ function App() {
                     setIsLargeFont={setIsLargeFont}
                     memberName={memberName}
                     memberCode={memberCode}
+                    memberNumber={memberNumber}
                 />
             </div>
         </>

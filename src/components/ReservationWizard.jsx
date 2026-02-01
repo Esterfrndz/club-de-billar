@@ -9,7 +9,7 @@ import './ReservationWizard.css';
   - tableData: object { id, name, colorClass }
   - checkAvailability: function(tableId, date, time) -> boolean
 */
-export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberCode }) {
+export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberCode, memberNumber }) {
     const [step, setStep] = useState(1);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -130,7 +130,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <p><strong>Hora:</strong> {time}</p>
                                     <hr />
                                     <p><strong>Nombre:</strong> {memberName}</p>
-                                    <p><strong>Socio:</strong> {memberCode}</p>
+                                    <p><strong>Socio nº:</strong> {memberNumber || memberCode}</p>
                                 </div>
 
                                 <div className="step-actions">
