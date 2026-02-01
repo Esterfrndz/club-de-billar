@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import './MemberManager.css';
 
-export function MemberManager({ members, onAddMember, onDeleteMember, loading }) {
+export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMember, loading }) {
     const [newName, setNewName] = useState('');
     const [isSeeding, setIsSeeding] = useState(false);
+    const [editingUrls, setEditingUrls] = useState({});
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,7 +17,24 @@ export function MemberManager({ members, onAddMember, onDeleteMember, loading })
         }
     };
 
+    const handleUrlChange = (id, url) => {
+        setEditingUrls(prev => ({ ...prev, [id]: url }));
+    };
+
+    const handleSaveUrl = async (id) => {
+        const url = editingUrls[id];
+        if (url === undefined) return;
+
+        const result = await onUpdateMember(id, { photo_url: url });
+        if (result.success) {
+            // Success alert or some feedback
+        } else {
+            alert('Error al actualizar: ' + result.error);
+        }
+    };
+
     const seedMembers = async () => {
+        // ... (existing seed members code remains same)
         if (!window.confirm('¿Quieres cargar la lista inicial de socios fundadores?')) return;
 
         setIsSeeding(true);
@@ -36,7 +54,6 @@ export function MemberManager({ members, onAddMember, onDeleteMember, loading })
         ];
 
         for (const name of initialMembers) {
-            // Check if member already exists to avoid duplicates
             if (!members.some(m => m.name === name)) {
                 await onAddMember(name);
             }
@@ -78,8 +95,8 @@ export function MemberManager({ members, onAddMember, onDeleteMember, loading })
                         <thead>
                             <tr>
                                 <th>Foto</th>
-                                <th>Nombre</th>
-                                <th>Código de Acceso</th>
+                                <th>Nombre / URL Imagen</th>
+                                <th>Código</th>
                                 <th>Admin</th>
                                 <th>Acciones</th>
                             </tr>
@@ -94,7 +111,27 @@ export function MemberManager({ members, onAddMember, onDeleteMember, loading })
                                             <div className="member-photo-placeholder">👤</div>
                                         )}
                                     </td>
-                                    <td>{member.name}</td>
+                                    <td>
+                                        <div className="member-info-edit">
+                                            <strong>{member.name}</strong>
+                                            <div className="photo-url-edit">
+                                                <input
+                                                    type="text"
+                                                    placeholder="URL de la foto..."
+                                                    defaultValue={member.photo_url || ''}
+                                                    onChange={(e) => handleUrlChange(member.id, e.target.value)}
+                                                    className="url-input"
+                                                />
+                                                <button
+                                                    onClick={() => handleSaveUrl(member.id)}
+                                                    className="btn-save-url"
+                                                    disabled={editingUrls[member.id] === undefined || editingUrls[member.id] === member.photo_url}
+                                                >
+                                                    OK
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>
                                         <span className="access-code-badge">{member.access_code}</span>
                                     </td>

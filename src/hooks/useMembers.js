@@ -86,12 +86,30 @@ export function useMembers() {
         }
     };
 
+    const updateMember = async (id, updates) => {
+        try {
+            const { data, error } = await supabase
+                .from('members')
+                .update(updates)
+                .eq('id', id)
+                .select();
+
+            if (error) throw error;
+            setMembers(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+            return { success: true, data: data[0] };
+        } catch (err) {
+            console.error('Error updating member:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
     return {
         members,
         loading,
         error,
         addMember,
         deleteMember,
+        updateMember,
         checkAccess,
         refreshMembers: fetchMembers
     };
