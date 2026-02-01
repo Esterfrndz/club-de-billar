@@ -169,7 +169,7 @@
     width: 80px;
     height: 80px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 3px solid white;
     border-radius: var(--border-radius-circle);
     display: flex;
     align-items: center;
@@ -177,7 +177,7 @@
     font-size: 2rem;
     color: var(--color-text-secondary);
     overflow: hidden;
-    /* Ensure image doesn't bleed out */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .hero-icon-img {

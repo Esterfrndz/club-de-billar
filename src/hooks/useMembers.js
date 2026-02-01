@@ -69,13 +69,14 @@ export function useMembers() {
         try {
             const { data, error } = await supabase
                 .from('members')
-                .select('name, access_code, is_admin, photo_url')
+                .select('id, name, access_code, is_admin, photo_url')
                 .eq('access_code', code)
                 .single();
 
             if (error) return { success: false, error: "Código incorrecto" };
             return {
                 success: true,
+                id: data.id,
                 name: data.name,
                 code: data.access_code,
                 isAdmin: data.is_admin || false,

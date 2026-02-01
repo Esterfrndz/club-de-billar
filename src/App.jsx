@@ -24,9 +24,67 @@ function App() {
     const [memberCode, setMemberCode] = useState(() => {
         return sessionStorage.getItem('memberCode') || '';
     });
+    const [memberId, setMemberId] = useState(() => {
+        return sessionStorage.getItem('memberId') || '';
+    });
     const [memberPhoto, setMemberPhoto] = useState(() => {
         return sessionStorage.getItem('memberPhoto') || '';
     });
+
+    const handleGlobalUpdate = async (id, updates) => {
+        const result = await updateMember(id, updates);
+        if (result.success) {
+            // Sincronizar con el estado global si es el usuario actual
+            const updatedMember = members.find(m => m.id === id);
+            const isSelf = id === memberId || (updatedMember && updatedMember.access_code === memberCode);
+
+            if (isSelf) {
+                if (updates.name) {
+                    setMemberName(updates.name);
+                    sessionStorage.setItem('memberName', updates.name);
+                }
+                if (updates.photo_url !== undefined) {
+                    setMemberPhoto(updates.photo_url || '');
+                    sessionStorage.setItem('memberPhoto', updates.photo_url || '');
+                }
+                if (!memberId) {
+                    setMemberId(id);
+                    sessionStorage.setItem('memberId', id);
+                }
+            }
+        }
+        return result;
+    };
+
+    const handleGlobalUpload = async (id, file) => {
+        const result = await uploadMemberPhoto(id, file);
+        if (result.success) {
+            const newPhotoUrl = result.data?.photo_url;
+            const updatedMember = members.find(m => m.id === id);
+            const isSelf = id === memberId || (updatedMember && updatedMember.access_code === memberCode);
+
+            if (isSelf && newPhotoUrl) {
+                setMemberPhoto(newPhotoUrl);
+                sessionStorage.setItem('memberPhoto', newPhotoUrl);
+                if (!memberId) {
+                    setMemberId(id);
+                    sessionStorage.setItem('memberId', id);
+                }
+            }
+        }
+        return result;
+    };
+
+    const handleLogout = () => {
+        setMemberName('');
+        setMemberCode('');
+        setMemberId('');
+        setMemberPhoto('');
+        setIsAdmin(false);
+        setIsPortalLocked(true);
+        sessionStorage.clear();
+        setActiveTab('servicios');
+    };
     const [isAdmin, setIsAdmin] = useState(() => {
         const saved = sessionStorage.getItem('isAdmin');
         return saved === 'true';
@@ -118,15 +176,17 @@ function App() {
         }
     };
 
-    const handleAccessGranted = (name, code, adminStatus, photoUrl) => {
+    const handleAccessGranted = (name, code, adminStatus, photoUrl, id) => {
         sessionStorage.setItem('accessGranted', 'true');
         sessionStorage.setItem('memberName', name);
         sessionStorage.setItem('memberCode', code);
         sessionStorage.setItem('isAdmin', adminStatus ? 'true' : 'false');
+        sessionStorage.setItem('memberId', id || '');
         sessionStorage.setItem('memberPhoto', photoUrl || '');
         setMemberName(name);
         setMemberCode(code);
         setIsAdmin(adminStatus || false);
+        setMemberId(id || '');
         setMemberPhoto(photoUrl || '');
         setIsPortalLocked(false);
     };
@@ -165,14 +225,7 @@ function App() {
                                     <div className="user-avatar">👤</div>
                                 )}
                                 <span className="admin-name">{memberName}</span>
-                                <button className="logout-btn" onClick={() => {
-                                    sessionStorage.clear();
-                                    setIsPortalLocked(true);
-                                    setMemberName('');
-                                    setMemberCode('');
-                                    setIsAdmin(false);
-                                    setActiveTab('servicios'); // Reset tab on logout
-                                }} title="Cerrar sesión">SALIR</button>
+                                <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">SALIR</button>
                             </div>
                         )}
                     </div>
@@ -285,8 +338,8 @@ function App() {
                             members={members}
                             onAddMember={addMember}
                             onDeleteMember={deleteMember}
-                            onUpdateMember={updateMember}
-                            onUploadPhoto={uploadMemberPhoto}
+                            onUpdateMember={handleGlobalUpdate}
+                            onUploadPhoto={handleGlobalUpload}
                             loading={membersLoading}
                         />
                     )}
