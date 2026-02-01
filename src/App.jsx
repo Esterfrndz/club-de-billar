@@ -94,8 +94,8 @@ function App() {
         if (!members.length || (!memberId && !memberCode)) return;
 
         const me = members.find(m =>
-            (memberId && m.id === memberId) ||
-            (memberCode && m.access_code === memberCode)
+            (memberId && String(m.id) === String(memberId)) ||
+            (memberCode && String(m.access_code) === String(memberCode))
         );
 
         if (me) {
@@ -265,7 +265,15 @@ function App() {
                     <div className="hero-content">
                         <div className="hero-icon">
                             {memberPhoto ? (
-                                <img src={memberPhoto} alt={memberName} className="hero-icon-img" />
+                                <img
+                                    src={memberPhoto}
+                                    alt={memberName}
+                                    className="hero-icon-img"
+                                    onError={(e) => {
+                                        console.error("Hero image failed to load:", memberPhoto);
+                                        setMemberPhoto('');
+                                    }}
+                                />
                             ) : (
                                 '🏢'
                             )}
