@@ -319,7 +319,7 @@ function App() {
                     )}
                     {(isAdmin || memberName) && (
                         <button
-                            className={`tab-link-calendario ${activeTab === 'calendario' ? 'active' : ''}`}
+                            className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
                             onClick={() => setActiveTab('calendario')}
                         >
                             CALENDARIO
