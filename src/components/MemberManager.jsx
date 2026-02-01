@@ -122,10 +122,10 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                             </tr>
                         </thead>
                         <tbody>
-                            {members.map(member => (
+                            {members.map((member, index) => (
                                 <tr key={member.id}>
                                     <td>
-                                        <span className="member-id-badge">{member.id}</span>
+                                        <span className="member-id-badge">{index + 1}</span>
                                     </td>
                                     <td>
                                         <div className="avatar-preview-container">
