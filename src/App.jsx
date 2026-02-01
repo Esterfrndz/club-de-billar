@@ -181,7 +181,13 @@ function App() {
                 {/* Hero Section */}
                 <div className="hero-section">
                     <div className="hero-content">
-                        <div className="hero-icon">🏢</div>
+                        <div className="hero-icon">
+                            {memberPhoto ? (
+                                <img src={memberPhoto} alt={memberName} className="hero-icon-img" />
+                            ) : (
+                                '🏢'
+                            )}
+                        </div>
                         <div className="hero-details">
                             <h1>{memberName ? `Bienvenido ${memberName}` : 'Club de billar Paterna'}</h1>
                             <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
