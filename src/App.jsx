@@ -4,7 +4,6 @@ import { ReservationWizard } from './components/ReservationWizard.jsx'
 import { AccessPortal } from './components/AccessPortal.jsx'
 import { AdminCalendarView } from './components/AdminCalendarView.jsx'
 import { MemberManager } from './components/MemberManager.jsx'
-import { TodayCalendar } from './components/TodayCalendar.jsx'
 import { useReservations } from './hooks/useReservations.js'
 import { useMembers } from './hooks/useMembers.js'
 import './AppLayout.css'
@@ -317,12 +316,6 @@ function App() {
                             MIS PARTIDAS
                         </button>
                     )}
-                    <button
-                        className={`tab-link ${activeTab === 'calendario' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('calendario')}
-                    >
-                        CALENDARIO
-                    </button>
                     {isAdmin && (
                         <button
                             className={`tab-link ${activeTab === 'todas-reservas' ? 'active' : ''}`}
@@ -394,13 +387,6 @@ function App() {
                         />
                     )}
 
-                    {activeTab === 'calendario' && (
-                        <TodayCalendar
-                            reservations={reservations}
-                            members={members}
-                            tables={tablesData}
-                        />
-                    )}
                 </main>
 
                 <ReservationWizard
