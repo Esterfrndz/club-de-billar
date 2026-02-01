@@ -185,7 +185,7 @@ function App() {
                         <div className="hero-details">
                             <h1>{memberName ? `Bienvenido ${memberName}` : 'Club de billar Paterna'}</h1>
                             <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
-                                {isOpen ? 'Abierto' : 'Cerrado'}
+                                {isOpen ? 'Local Abierto' : 'Local Cerrado'}
                             </span>
                         </div>
                     </div>
