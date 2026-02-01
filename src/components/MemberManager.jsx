@@ -147,7 +147,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                                                     <input
                                                         type="text"
                                                         placeholder="Pegar URL manualmente..."
-                                                        defaultValue={member.photo_url || ''}
+                                                        value={editingUrls[member.id] !== undefined ? editingUrls[member.id] : (member.photo_url || '')}
                                                         onChange={(e) => handleUrlChange(member.id, e.target.value)}
                                                         className="url-input"
                                                     />

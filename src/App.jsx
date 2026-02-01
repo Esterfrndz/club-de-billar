@@ -74,6 +74,11 @@ function App() {
         return result;
     };
 
+    const [isAdmin, setIsAdmin] = useState(() => {
+        const saved = sessionStorage.getItem('isAdmin');
+        return saved === 'true';
+    });
+
     const handleLogout = () => {
         setMemberName('');
         setMemberCode('');
@@ -84,10 +89,35 @@ function App() {
         sessionStorage.clear();
         setActiveTab('servicios');
     };
-    const [isAdmin, setIsAdmin] = useState(() => {
-        const saved = sessionStorage.getItem('isAdmin');
-        return saved === 'true';
-    });
+    // Sincronizar estado del usuario actual con la lista de socios
+    useEffect(() => {
+        if (!members.length || (!memberId && !memberCode)) return;
+
+        const me = members.find(m =>
+            (memberId && m.id === memberId) ||
+            (memberCode && m.access_code === memberCode)
+        );
+
+        if (me) {
+            if (me.name !== memberName) {
+                setMemberName(me.name);
+                sessionStorage.setItem('memberName', me.name);
+            }
+            if (me.photo_url !== (memberPhoto || null)) {
+                const newPhoto = me.photo_url || '';
+                setMemberPhoto(newPhoto);
+                sessionStorage.setItem('memberPhoto', newPhoto);
+            }
+            if ((me.is_admin || false) !== isAdmin) {
+                setIsAdmin(me.is_admin || false);
+                sessionStorage.setItem('isAdmin', me.is_admin ? 'true' : 'false');
+            }
+            if (!memberId && me.id) {
+                setMemberId(me.id);
+                sessionStorage.setItem('memberId', me.id);
+            }
+        }
+    }, [members, memberId, memberCode, memberName, memberPhoto, isAdmin]);
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
         return saved ? JSON.parse(saved) : false;
