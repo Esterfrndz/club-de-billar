@@ -149,6 +149,17 @@ td {
     color: #93c5fd;
 }
 
+.member-id-badge {
+    font-family: monospace;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.dark-mode .member-id-badge {
+    color: #94a3b8;
+}
+
 .btn-delete-member {
     background: transparent;
     color: #ef4444;

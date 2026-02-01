@@ -113,6 +113,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                     <table>
                         <thead>
                             <tr>
+                                <th>Nº Socio</th>
                                 <th>Foto</th>
                                 <th>Nombre / Gestión Imagen</th>
                                 <th>Código</th>
@@ -123,6 +124,9 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                         <tbody>
                             {members.map(member => (
                                 <tr key={member.id}>
+                                    <td>
+                                        <span className="member-id-badge">{member.id}</span>
+                                    </td>
                                     <td>
                                         <div className="avatar-preview-container">
                                             {member.photo_url ? (
@@ -195,7 +199,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                             ))}
                             {members.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="empty-row">No hay socios registrados.</td>
+                                    <td colSpan="6" className="empty-row">No hay socios registrados.</td>
                                 </tr>
                             )}
                         </tbody>
