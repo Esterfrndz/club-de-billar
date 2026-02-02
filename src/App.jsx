@@ -255,13 +255,7 @@ function App() {
                         </button>
                         {memberName && (
                             <div className="admin-menu">
-                                {memberPhoto ? (
-                                    <img src={memberPhoto} alt={memberName} className="user-avatar-img" />
-                                ) : (
-                                    <div className="user-avatar">👤</div>
-                                )}
-                                <span className="admin-name">{memberName}</span>
-                                <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">SALIR</button>
+                                <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión" style={{ marginLeft: 0 }}>SALIR</button>
                             </div>
                         )}
                     </div>
