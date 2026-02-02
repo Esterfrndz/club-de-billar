@@ -316,7 +316,7 @@ function App() {
                         className={`tab-link ${activeTab === 'partidas' ? 'active' : ''}`}
                         onClick={() => setActiveTab('partidas')}
                     >
-                        PARTIDAS HOY
+                        PARTIDAS DE HOY
                     </button>
                     {isAdmin && (
                         <button

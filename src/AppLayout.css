@@ -330,38 +330,36 @@
 
     .tabs-nav {
         padding: 0 16px;
-        gap: 24px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        /* Smooth scrolling for iOS */
-        white-space: nowrap;
-        scrollbar-width: auto;
-        /* Ensure scrollbar is visible when scrolling */
+        gap: 12px 20px;
+        /* Vertical 12px, Horizontal 20px */
+        flex-wrap: wrap;
+        /* Wrap tabs to next line */
+        justify-content: center;
+        /* Center tabs on mobile */
+        overflow-x: visible;
+        white-space: normal;
         margin-bottom: var(--spacing-lg);
+        border-bottom: none;
+        /* Let individual items handle indicators if needed, or keep it clean */
     }
 
     .tabs-nav::-webkit-scrollbar {
-        display: block;
-        height: 3px;
+        display: none;
     }
 
-    .tabs-nav::-webkit-scrollbar-thumb {
-        background: var(--color-border);
-        border-radius: 3px;
-    }
-
-    /* Prevent clipping of last element */
     .tabs-nav::after {
-        content: "";
-        padding-right: 20px;
-        flex-shrink: 0;
+        display: none;
     }
 
     .tab-link {
-        font-size: 0.9rem;
-        padding: 16px 4px;
-        /* Larger hit area */
+        font-size: 0.85rem;
+        padding: 8px 4px;
         flex-shrink: 0;
+        border-bottom: 2px solid transparent;
+    }
+
+    .tab-link.active {
+        border-bottom-color: var(--color-accent-primary);
     }
 
     .section-header {
