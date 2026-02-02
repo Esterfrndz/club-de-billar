@@ -341,14 +341,6 @@ function App() {
                         <>
                             <div className="section-header">
                                 <h2 className="section-title">Servicios</h2>
-                                <div className="search-container">
-                                    <span className="search-icon">🔍</span>
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar..."
-                                        className="search-input"
-                                    />
-                                </div>
                             </div>
 
                             <TableList tables={tablesData} onReserve={handleOpenReserve} />
