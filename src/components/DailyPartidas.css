@@ -1,0 +1,121 @@
+.daily-partidas-container {
+    padding: 0 var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.partidas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--color-bg-secondary);
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.partida-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.partida-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.date-card {
+    width: 70px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.date-header {
+    background-color: #d32f2f;
+    /* Red header from image */
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.date-body {
+    background-color: white;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+.day-num {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.year-num {
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.partida-details {
+    flex-grow: 1;
+}
+
+.partida-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 8px 0;
+    text-decoration: underline;
+    /* Matching the underline in image */
+}
+
+.partida-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.info-icon {
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.no-partidas {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-text-muted);
+    background: var(--color-bg-secondary);
+    border-radius: 12px;
+}
+
+/* Dark mode adjustments */
+.dark-mode .date-body {
+    background-color: #2a2a2a;
+    color: #eee;
+}
+
+.dark-mode .partida-item {
+    border-bottom-color: #444;
+}

@@ -4,6 +4,7 @@ import { ReservationWizard } from './components/ReservationWizard.jsx'
 import { AccessPortal } from './components/AccessPortal.jsx'
 import { AdminCalendarView } from './components/AdminCalendarView.jsx'
 import { MemberManager } from './components/MemberManager.jsx'
+import { DailyPartidas } from './components/DailyPartidas.jsx'
 import { useReservations } from './hooks/useReservations.js'
 import { useMembers } from './hooks/useMembers.js'
 import './AppLayout.css'
@@ -14,7 +15,7 @@ function App() {
     const { members, addMember, deleteMember, updateMember, uploadMemberPhoto, loading: membersLoading } = useMembers();
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
-    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'nosotros', 'mis-reservas', 'todas-reservas', 'socios'
+    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'partidas', 'nosotros', 'mis-reservas', 'todas-reservas', 'socios'
     const [isPortalLocked, setIsPortalLocked] = useState(() => {
         const saved = sessionStorage.getItem('accessGranted');
         return saved !== 'true';
@@ -298,6 +299,12 @@ function App() {
                         SERVICIOS
                     </button>
                     <button
+                        className={`tab-link ${activeTab === 'partidas' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('partidas')}
+                    >
+                        PARTIDAS
+                    </button>
+                    <button
                         className={`tab-link ${activeTab === 'nosotros' ? 'active' : ''}`}
                         onClick={() => setActiveTab('nosotros')}
                     >
@@ -346,6 +353,10 @@ function App() {
 
                             <TableList tables={tablesData} onReserve={handleOpenReserve} />
                         </>
+                    )}
+
+                    {activeTab === 'partidas' && (
+                        <DailyPartidas reservations={reservations} />
                     )}
 
                     {activeTab === 'nosotros' && (
