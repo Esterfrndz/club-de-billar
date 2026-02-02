@@ -114,3 +114,36 @@
 .dark-mode .partida-item {
     border-bottom-color: #444;
 }
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .daily-partidas-container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .partidas-list {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .partida-item {
+        gap: 16px;
+    }
+
+    .date-card {
+        width: 60px;
+        height: 80px;
+    }
+
+    .time-display {
+        font-size: 16px;
+    }
+
+    .partida-title {
+        font-size: 1rem;
+    }
+
+    .info-item {
+        font-size: 0.8rem;
+    }
+}
