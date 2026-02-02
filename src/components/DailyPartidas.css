@@ -58,16 +58,11 @@
     color: #333;
 }
 
-.day-num {
-    font-size: 24px;
+.time-display {
+    font-size: 20px;
     font-weight: 800;
     line-height: 1;
-}
-
-.year-num {
-    font-size: 10px;
-    font-weight: 600;
-    margin-top: 2px;
+    color: #d32f2f;
 }
 
 .partida-details {

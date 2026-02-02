@@ -38,10 +38,9 @@ export const DailyPartidas = ({ reservations }) => {
                     {todayReservations.map((res) => (
                         <div key={res.id} className="partida-item">
                             <div className="date-card">
-                                <div className="date-header">{getMonthAbbr(res.date)}</div>
+                                <div className="date-header">HORA</div>
                                 <div className="date-body">
-                                    <span className="day-num">{getDay(res.date)}</span>
-                                    <span className="year-num">{getYear(res.date)}</span>
+                                    <span className="time-display">{res.time}</span>
                                 </div>
                             </div>
                             <div className="partida-details">
