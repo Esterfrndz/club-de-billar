@@ -49,9 +49,6 @@ export const DailyPartidas = ({ reservations }) => {
                                 </h3>
                                 <div className="partida-info">
                                     <span className="info-item">
-                                        <span className="info-icon">🕒</span> Hora: {res.time}
-                                    </span>
-                                    <span className="info-item">
                                         <span className="info-icon">📍</span> Club de billar Paterna
                                     </span>
                                 </div>
