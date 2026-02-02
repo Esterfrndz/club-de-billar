@@ -265,22 +265,10 @@ function App() {
                 <div className="hero-section">
                     <div className="hero-content">
                         <div className="hero-icon">
-                            {memberPhoto ? (
-                                <img
-                                    src={memberPhoto}
-                                    alt={memberName}
-                                    className="hero-icon-img"
-                                    onError={(e) => {
-                                        console.error("Hero image failed to load:", memberPhoto);
-                                        setMemberPhoto('');
-                                    }}
-                                />
-                            ) : (
-                                '🏢'
-                            )}
+                            🏢
                         </div>
                         <div className="hero-details">
-                            <h1>{memberName ? `Bienvenido ${memberName}` : 'Club de billar Paterna'}</h1>
+                            <h1>Club de billar Paterna</h1>
                             <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
                                 {isOpen ? 'Local Abierto' : 'Local Cerrado'}
                             </span>
