@@ -296,13 +296,7 @@ function App() {
                         className={`tab-link ${activeTab === 'servicios' ? 'active' : ''}`}
                         onClick={() => setActiveTab('servicios')}
                     >
-                        SERVICIOS
-                    </button>
-                    <button
-                        className={`tab-link ${activeTab === 'partidas' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('partidas')}
-                    >
-                        PARTIDAS
+                        RESERVAR
                     </button>
                     <button
                         className={`tab-link ${activeTab === 'nosotros' ? 'active' : ''}`}
@@ -315,9 +309,15 @@ function App() {
                             className={`tab-link ${activeTab === 'mis-reservas' ? 'active' : ''}`}
                             onClick={() => setActiveTab('mis-reservas')}
                         >
-                            MIS PARTIDAS
+                            MIS RESERVAS
                         </button>
                     )}
+                    <button
+                        className={`tab-link ${activeTab === 'partidas' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('partidas')}
+                    >
+                        PARTIDAS HOY
+                    </button>
                     {isAdmin && (
                         <button
                             className={`tab-link ${activeTab === 'todas-reservas' ? 'active' : ''}`}
