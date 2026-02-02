@@ -45,7 +45,7 @@ export const DailyPartidas = ({ reservations }) => {
                             </div>
                             <div className="partida-details">
                                 <h3 className="partida-title">
-                                    Mesa {res.table_id} - {res.member_name || 'Socio'}
+                                    Mesa {res.table_id} - {res.customer_name || 'Socio'}
                                 </h3>
                                 <div className="partida-info">
                                     <span className="info-item">
