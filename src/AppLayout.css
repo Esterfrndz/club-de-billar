@@ -330,22 +330,38 @@
 
     .tabs-nav {
         padding: 0 16px;
-        gap: 20px;
-        /* More space between scrollable items */
+        gap: 24px;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Smooth scrolling for iOS */
         white-space: nowrap;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        scrollbar-width: auto;
+        /* Ensure scrollbar is visible when scrolling */
+        margin-bottom: var(--spacing-lg);
     }
 
     .tabs-nav::-webkit-scrollbar {
-        display: none;
+        display: block;
+        height: 3px;
+    }
+
+    .tabs-nav::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: 3px;
+    }
+
+    /* Prevent clipping of last element */
+    .tabs-nav::after {
+        content: "";
+        padding-right: 20px;
+        flex-shrink: 0;
     }
 
     .tab-link {
-        font-size: 0.85rem;
-        /* Slightly larger for readability */
-        padding: 12px 4px;
+        font-size: 0.9rem;
+        padding: 16px 4px;
+        /* Larger hit area */
+        flex-shrink: 0;
     }
 
     .section-header {
