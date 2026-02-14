@@ -12,16 +12,25 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
     // Sort dates
     const sortedDates = Object.keys(groupedReservations).sort();
 
-    const handleDelete = async (id, info) => {
-        if (window.confirm(`¿Estás seguro de que quieres ${isAdmin ? 'eliminar' : 'cancelar'} la reserva de ${info}?`)) {
-            console.log('Intentando eliminar reserva con ID:', id);
-            const result = await onDelete(id);
-            console.log('Resultado de eliminación:', result);
+    const handleDelete = async (id, info, reservation) => {
+        const currentMemberCode = sessionStorage.getItem('memberCode');
+        const isCompanion = !isAdmin && reservation.companion_member_id === currentMemberCode;
+        const action = isAdmin ? 'eliminar' : (isCompanion ? 'salir de' : 'cancelar');
+
+        if (window.confirm(`¿Estás seguro de que quieres ${action} la reserva de ${info}?`)) {
+            console.log('Intentando eliminar/salir de reserva con ID:', id);
+            const result = await onDelete(id, currentMemberCode);
+            console.log('Resultado:', result);
+
             if (result && !result.success) {
-                console.error('Error al eliminar:', result.error);
-                alert(`Error al ${isAdmin ? 'eliminar' : 'cancelar'}: ${result.error}`);
+                console.error('Error:', result.error);
+                alert(`Error al ${action}: ${result.error}`);
             } else if (result && result.success) {
-                console.log('Reserva eliminada exitosamente');
+                if (result.isLeave) {
+                    alert('Has salido de la reserva exitosamente. La reserva sigue disponible para el jugador principal.');
+                } else {
+                    console.log('Reserva eliminada exitosamente');
+                }
             }
         }
     };
@@ -52,7 +61,20 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
                                         <div key={res.id} className="reservation-card">
                                             <div className="res-time">{res.time}</div>
                                             <div className="res-details">
-                                                <div className="res-name">{res.customer_name}</div>
+                                                <div className="res-name">
+                                                    {res.customer_name}
+                                                    {!isAdmin && res.member_id === sessionStorage.getItem('memberCode') && (
+                                                        <span className="role-badge">Tú</span>
+                                                    )}
+                                                </div>
+                                                {res.companion_name && (
+                                                    <div className="res-companion">
+                                                        + {res.companion_name}
+                                                        {!isAdmin && res.companion_member_id === sessionStorage.getItem('memberCode') && (
+                                                            <span className="role-badge">Tú</span>
+                                                        )}
+                                                    </div>
+                                                )}
                                                 <div className="res-table">Mesa {res.table_id}</div>
                                                 {isAdmin && (
                                                     <div className="res-meta">
@@ -63,7 +85,7 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
                                             </div>
                                             <button
                                                 className="btn-delete-res"
-                                                onClick={() => handleDelete(res.id, res.customer_name)}
+                                                onClick={() => handleDelete(res.id, res.customer_name, res)}
                                                 title={isAdmin ? "Eliminar reserva" : "Cancelar reserva"}
                                             >
                                                 {isAdmin ? 'BORRAR' : 'CANCELAR'}

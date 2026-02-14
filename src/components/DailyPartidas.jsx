@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './DailyPartidas.css';
 
-export const DailyPartidas = ({ reservations }) => {
+export const DailyPartidas = ({ reservations, onJoinReservation, memberName, memberCode }) => {
+    const [showJoinDialog, setShowJoinDialog] = useState(false);
+    const [selectedReservation, setSelectedReservation] = useState(null);
+
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
 
@@ -21,6 +24,29 @@ export const DailyPartidas = ({ reservations }) => {
 
     const getYear = (dateStr) => {
         return dateStr.split('-')[0];
+    };
+
+    const handleJoinClick = (reservation) => {
+        setSelectedReservation(reservation);
+        setShowJoinDialog(true);
+    };
+
+    const confirmJoin = () => {
+        if (selectedReservation && onJoinReservation) {
+            onJoinReservation(selectedReservation.id);
+        }
+        setShowJoinDialog(false);
+        setSelectedReservation(null);
+    };
+
+    const cancelJoin = () => {
+        setShowJoinDialog(false);
+        setSelectedReservation(null);
+    };
+
+    // Check if a reservation is joinable (solo and not yet joined)
+    const isJoinable = (res) => {
+        return res.is_solo === true && !res.companion_name && res.member_id !== memberCode;
     };
 
     return (
@@ -45,16 +71,69 @@ export const DailyPartidas = ({ reservations }) => {
                             </div>
                             <div className="partida-details">
                                 <h3 className="partida-title">
-                                    Mesa {res.table_id} - {res.customer_name || 'Socio'}
+                                    Mesa {res.table_id}
                                 </h3>
+                                <div className="partida-players">
+                                    <div className="player-name">
+                                        <span className="player-icon">👤</span>
+                                        {res.customer_name || 'Socio'}
+                                    </div>
+                                    {res.companion_name && (
+                                        <div className="player-name companion">
+                                            <span className="player-icon">👤</span>
+                                            {res.companion_name}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="partida-info">
                                     <span className="info-item">
                                         <span className="info-icon">📍</span> Club de billar Paterna
                                     </span>
                                 </div>
+
+                                {/* Show reservation status */}
+                                <div className="reservation-status">
+                                    {res.is_solo && !res.companion_name ? (
+                                        <span className="status-badge solo">🎱 Solo - Disponible para unirse</span>
+                                    ) : res.companion_name ? (
+                                        <span className="status-badge accompanied">👥 Acompañado - {res.companion_name}</span>
+                                    ) : (
+                                        <span className="status-badge accompanied">👥 Acompañado</span>
+                                    )}
+                                </div>
+
+                                {/* Show join button if applicable */}
+                                {isJoinable(res) && memberName && (
+                                    <button
+                                        className="join-button"
+                                        onClick={() => handleJoinClick(res)}
+                                    >
+                                        Unirse
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Join confirmation dialog */}
+            {showJoinDialog && selectedReservation && (
+                <div className="join-dialog-overlay" onClick={cancelJoin}>
+                    <div className="join-dialog" onClick={(e) => e.stopPropagation()}>
+                        <h3>Unirse a la reserva</h3>
+                        <p>¿Quieres unirte a esta partida?</p>
+                        <div className="dialog-details">
+                            <p><strong>Mesa:</strong> {selectedReservation.table_id}</p>
+                            <p><strong>Hora:</strong> {selectedReservation.time}</p>
+                            <p><strong>Jugador:</strong> {selectedReservation.customer_name}</p>
+                            <p><strong>Tu nombre:</strong> {memberName}</p>
+                        </div>
+                        <div className="dialog-actions">
+                            <button className="btn-cancel" onClick={cancelJoin}>Cancelar</button>
+                            <button className="btn-confirm" onClick={confirmJoin}>Confirmar</button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -9,10 +9,12 @@ import './ReservationWizard.css';
   - tableData: object { id, name, colorClass }
   - checkAvailability: function(tableId, date, time) -> boolean
 */
-export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberCode, memberNumber }) {
+export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberCode, memberNumber, reservations, members, onJoinReservation }) {
     const [step, setStep] = useState(1);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
+    const [isSolo, setIsSolo] = useState(null); // null, true, or false
+    const [companionMemberId, setCompanionMemberId] = useState('');
 
     // No step 2 formData needed now
 
@@ -21,6 +23,8 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
         if (isOpen) {
             setStep(1);
             setTime('');
+            setIsSolo(null);
+            setCompanionMemberId('');
             const today = new Date().toISOString().split('T')[0];
             setDate(today);
         }
@@ -28,19 +32,28 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
 
     if (!isOpen || !tableData) return null;
 
-    const handleNext = () => setStep(3); // Jump to summary
-    const handleBack = () => setStep(1); // Back to time selection
+    const handleNextFromTime = () => setStep(2); // Go to solo/accompanied selection
+    const handleNextFromType = () => setStep(3); // Go to summary
+    const handleBack = () => {
+        if (step === 3) setStep(2);
+        else if (step === 2) setStep(1);
+    };
 
     const handleSubmit = () => {
+        const companionMember = members.find(m => m.id === companionMemberId);
         onSubmit({
             tableId: tableData.id,
             date,
-            time
+            time,
+            isSolo,
+            companionName: isSolo ? '' : (companionMember?.name || ''),
+            companionMemberId: isSolo ? '' : companionMemberId
         });
     };
 
     // Helper to checking validity for steps
     const isStep1Valid = date && time;
+    const isStep2Valid = isSolo !== null && (isSolo === true || companionMemberId !== '');
 
     return (
         <div className="wizard-overlay">
@@ -60,7 +73,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                     <div className="progress-steps">
                         <div className={`step-circle ${step === 1 ? 'active' : ''}`}>1</div>
                         <div className="step-line"></div>
-                        <div className={`step-circle ${step === 3 ? 'active' : ''}`}>2</div>
+                        <div className={`step-circle ${step === 2 ? 'active' : ''}`}>2</div>
+                        <div className="step-line"></div>
+                        <div className={`step-circle ${step === 3 ? 'active' : ''}`}>3</div>
                     </div>
                 </div>
 
@@ -90,29 +105,107 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                         {['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'].map(slot => {
                                             const isTaken = checkAvailability(tableData.id, date, slot);
 
+                                            // Find if this slot is a solo reservation
+                                            const soloReservation = reservations.find(r =>
+                                                r.table_id === tableData.id &&
+                                                r.date === date &&
+                                                r.time === slot &&
+                                                r.is_solo === true &&
+                                                !r.companion_name &&
+                                                r.member_id !== memberCode
+                                            );
+
                                             // Check if time has already passed for today
                                             const now = new Date();
                                             const today = now.toISOString().split('T')[0];
-                                            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                                            const isPast = date === today && slot <= currentTime;
+                                            const currentHour = now.getHours();
+                                            const slotHour = parseInt(slot.split(':')[0]);
+                                            const isPast = date === today && slotHour < currentHour;
 
-                                            const isDisabled = isTaken || isPast;
+                                            const isDisabled = (isTaken && !soloReservation) || isPast;
 
                                             return (
-                                                <button
-                                                    key={slot}
-                                                    className={`time-slot ${time === slot ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-                                                    onClick={() => !isDisabled && setTime(slot)}
-                                                    disabled={isDisabled}
-                                                >
-                                                    {slot}
-                                                </button>
+                                                <div key={slot} className="time-slot-wrapper">
+                                                    <button
+                                                        className={`time-slot ${time === slot ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                                        onClick={() => !isDisabled && setTime(slot)}
+                                                        disabled={isDisabled}
+                                                    >
+                                                        {slot}
+                                                    </button>
+                                                    {soloReservation && (
+                                                        <div className="join-slot-info">
+                                                            <div className="join-slot-name">{soloReservation.customer_name}</div>
+                                                            <button
+                                                                className="join-slot-button"
+                                                                onClick={() => onJoinReservation && onJoinReservation(soloReservation.id)}
+                                                            >
+                                                                Unirse
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             );
                                         })}
                                     </div>
                                 </div>
                                 <div className="step-actions">
-                                    <button className="btn-next" disabled={!isStep1Valid} onClick={handleNext}>Continuar</button>
+                                    <button className="btn-next" disabled={!isStep1Valid} onClick={handleNextFromTime}>Continuar</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="step-content">
+                                <h2>¿Juegas solo o acompañado?</h2>
+                                <p className="step-description">Selecciona si vas a jugar solo o con un acompañante</p>
+
+                                <div className="reservation-type-buttons">
+                                    <button
+                                        className={`type-button ${isSolo === true ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            setIsSolo(true);
+                                            setCompanionMemberId('');
+                                        }}
+                                    >
+                                        <span className="type-icon">🎱</span>
+                                        <span className="type-label">Juego Solo</span>
+                                        <span className="type-hint">Otros pueden unirse</span>
+                                    </button>
+
+                                    <button
+                                        className={`type-button ${isSolo === false ? 'selected' : ''}`}
+                                        onClick={() => setIsSolo(false)}
+                                    >
+                                        <span className="type-icon">👥</span>
+                                        <span className="type-label">Juego Acompañado</span>
+                                        <span className="type-hint">Con un compañero</span>
+                                    </button>
+                                </div>
+
+                                {isSolo === false && (
+                                    <div className="companion-input-group">
+                                        <label>Selecciona tu acompañante</label>
+                                        <select
+                                            value={companionMemberId}
+                                            onChange={e => setCompanionMemberId(e.target.value)}
+                                            className="companion-select"
+                                        >
+                                            <option value="">-- Selecciona un socio --</option>
+                                            {members
+                                                .filter(m => m.id !== memberCode && m.access_code !== memberCode)
+                                                .map(member => (
+                                                    <option key={member.id} value={member.id}>
+                                                        {member.name}
+                                                    </option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                )}
+
+                                <div className="step-actions">
+                                    <button className="btn-next" disabled={!isStep2Valid} onClick={handleNextFromType}>Continuar</button>
                                 </div>
                             </div>
                         )}
@@ -128,6 +221,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <p><strong>Mesa:</strong> {tableData.name}</p>
                                     <p><strong>Fecha:</strong> {formatDate(date)}</p>
                                     <p><strong>Hora:</strong> {time}</p>
+                                    <p><strong>Tipo:</strong> {isSolo ? '🎱 Solo (otros pueden unirse)' : `👥 Acompañado${companionMemberId ? ` - ${members.find(m => m.id === companionMemberId)?.name}` : ''}`}</p>
                                     <hr />
                                     <p><strong>Nombre:</strong> {memberName}</p>
                                     <p><strong>Socio nº:</strong> {memberNumber || memberCode}</p>

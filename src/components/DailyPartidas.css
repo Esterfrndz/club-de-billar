@@ -74,8 +74,31 @@
     font-weight: 700;
     color: var(--color-text-primary);
     margin: 0 0 8px 0;
-    text-decoration: underline;
-    /* Matching the underline in image */
+}
+
+.partida-players {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.player-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.player-name.companion {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.player-icon {
+    font-size: 1rem;
 }
 
 .partida-info {
@@ -145,5 +168,145 @@
 
     .info-item {
         font-size: 0.8rem;
+    }
+}
+
+/* Reservation Status */
+.reservation-status {
+    margin-top: 12px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.solo {
+    background: rgba(46, 125, 50, 0.1);
+    color: var(--color-status-open);
+    border: 1px solid rgba(46, 125, 50, 0.3);
+}
+
+.status-badge.accompanied {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196F3;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+/* Join Button */
+.join-button {
+    margin-top: 12px;
+    background: var(--color-accent-primary);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.join-button:hover {
+    background: #1976D2;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Join Dialog */
+.join-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.join-dialog {
+    background: var(--color-bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+}
+
+.join-dialog h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.join-dialog>p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dialog-details {
+    background: var(--color-bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dialog-details p {
+    margin: 8px 0;
+    color: var(--color-text-primary);
+}
+
+.dialog-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+.btn-cancel,
+.btn-confirm {
+    padding: 10px 20px;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+}
+
+.btn-cancel:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.btn-confirm {
+    background: var(--color-accent-primary);
+    border: none;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background: #1976D2;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

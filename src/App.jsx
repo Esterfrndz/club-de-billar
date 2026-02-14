@@ -11,7 +11,7 @@ import './AppLayout.css'
 
 // Main App Component
 function App() {
-    const { reservations, addReservation, deleteReservation, checkAvailability } = useReservations();
+    const { reservations, addReservation, deleteReservation, checkAvailability, joinReservation } = useReservations();
     const { members, addMember, deleteMember, updateMember, uploadMemberPhoto, loading: membersLoading } = useMembers();
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
@@ -196,7 +196,10 @@ function App() {
             data.time,
             memberName,
             memberCode,
-            '' // No mobile needed now
+            '', // No mobile needed now
+            data.isSolo,
+            data.companionName,
+            data.companionMemberId
         );
 
         if (result.success) {
@@ -220,6 +223,16 @@ function App() {
         setMemberId(id || '');
         setMemberPhoto(photoUrl || '');
         setIsPortalLocked(false);
+    };
+
+    const handleJoinReservation = async (reservationId) => {
+        const result = await joinReservation(reservationId, memberName, memberCode);
+
+        if (result.success) {
+            alert("¡Te has unido a la reserva con éxito! 🎉");
+        } else {
+            alert(`Error: ${result.error}`);
+        }
     };
 
     const currentUser = members.find(m =>
@@ -348,7 +361,12 @@ function App() {
                     )}
 
                     {activeTab === 'partidas' && (
-                        <DailyPartidas reservations={reservations} />
+                        <DailyPartidas
+                            reservations={reservations}
+                            onJoinReservation={handleJoinReservation}
+                            memberName={memberName}
+                            memberCode={memberCode}
+                        />
                     )}
 
                     {activeTab === 'nosotros' && (
@@ -360,7 +378,9 @@ function App() {
 
                     {activeTab === 'mis-reservas' && (isAdmin || memberName) && (
                         <AdminCalendarView
-                            reservations={reservations.filter(r => r.member_id === memberCode)}
+                            reservations={reservations.filter(r =>
+                                r.member_id === memberCode || r.companion_member_id === memberCode
+                            )}
                             onDelete={deleteReservation}
                             isAdmin={false}
                         />
@@ -398,6 +418,9 @@ function App() {
                     memberName={memberName}
                     memberCode={memberCode}
                     memberNumber={memberNumber}
+                    reservations={reservations}
+                    members={members}
+                    onJoinReservation={handleJoinReservation}
                 />
             </div >
         </>

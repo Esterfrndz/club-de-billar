@@ -27,7 +27,7 @@ export function useReservations() {
         }
     };
 
-    const addReservation = async (tableId, date, time, customerName, memberId = '', mobile = '') => {
+    const addReservation = async (tableId, date, time, customerName, memberId = '', mobile = '', isSolo = false, companionName = '', companionMemberId = '') => {
         // Basic validation
         if (!tableId || !date || !time || !customerName) {
             return { success: false, error: "Faltan datos obligatorios" };
@@ -53,7 +53,10 @@ export function useReservations() {
                         time,
                         customer_name: customerName,
                         member_id: memberId,
-                        mobile: mobile
+                        mobile: mobile,
+                        is_solo: isSolo,
+                        companion_name: companionName || null,
+                        companion_member_id: companionMemberId || null
                     }
                 ])
                 .select();
@@ -69,8 +72,38 @@ export function useReservations() {
         }
     };
 
-    const deleteReservation = async (id) => {
+    const deleteReservation = async (id, memberCode = null) => {
         try {
+            // First, get the reservation to check if user is companion
+            const reservation = reservations.find(r => r.id === id);
+
+            if (!reservation) {
+                return { success: false, error: "Reserva no encontrada" };
+            }
+
+            // If user is the companion (not the creator), just remove companion data
+            if (memberCode && reservation.companion_member_id === memberCode) {
+                const { error } = await supabase
+                    .from('reservations')
+                    .update({
+                        is_solo: true,
+                        companion_name: null,
+                        companion_member_id: null
+                    })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                // Update local state
+                setReservations(prev => prev.map(r =>
+                    r.id === id
+                        ? { ...r, is_solo: true, companion_name: null, companion_member_id: null }
+                        : r
+                ));
+                return { success: true, isLeave: true };
+            }
+
+            // Otherwise, delete the entire reservation (user is the creator)
             const { error } = await supabase
                 .from('reservations')
                 .delete()
@@ -79,7 +112,7 @@ export function useReservations() {
             if (error) throw error;
 
             setReservations(prev => prev.filter(r => r.id !== id));
-            return { success: true };
+            return { success: true, isLeave: false };
         } catch (err) {
             console.error('Error deleting reservation:', err);
             return { success: false, error: err.message };
@@ -95,12 +128,39 @@ export function useReservations() {
         return reservations.some(r => r.table_id === tableId && r.date === date && r.time === time);
     };
 
+    const joinReservation = async (reservationId, companionName, companionMemberId = '') => {
+        try {
+            const { data, error } = await supabase
+                .from('reservations')
+                .update({
+                    is_solo: false,
+                    companion_name: companionName,
+                    companion_member_id: companionMemberId || null
+                })
+                .eq('id', reservationId)
+                .select();
+
+            if (error) throw error;
+
+            // Update local state
+            setReservations(prev => prev.map(r =>
+                r.id === reservationId ? data[0] : r
+            ));
+
+            return { success: true, data };
+        } catch (err) {
+            console.error('Error joining reservation:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
     return {
         reservations,
         addReservation,
         deleteReservation,
         getReservationsByDate,
         checkAvailability: isSlotOccupied,
+        joinReservation,
         loading,
         error
     };
