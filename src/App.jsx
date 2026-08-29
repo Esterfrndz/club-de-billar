@@ -7,7 +7,28 @@ import { MemberManager } from './components/MemberManager.jsx'
 import { DailyPartidas } from './components/DailyPartidas.jsx'
 import { useReservations } from './hooks/useReservations.js'
 import { useMembers } from './hooks/useMembers.js'
+import { todayLocalISO, weekRangeLocalISO } from './dateUtils.js'
 import './AppLayout.css'
+
+const DAILY_HOUR_LIMIT = 1;
+
+// Horas que "gasta" un socio en una reserva: 1h si juega solo, 0.5h si va
+// acompañado (sea titular o acompañante). Debe coincidir con el criterio de
+// la RPC `_member_daily_hours` en supabase/migrations/004_daily_hour_limit.sql.
+function memberHoursInReservation(reservation, memberId) {
+    const isOwner = String(reservation.member_id) === String(memberId);
+    const isCompanion = String(reservation.companion_member_id) === String(memberId);
+    if (!isOwner && !isCompanion) return 0;
+    if (isOwner) return reservation.is_solo ? 1 : 0.5;
+    return 0.5;
+}
+
+function sumMemberHours(reservations, memberId, dateFrom, dateTo) {
+    return reservations.reduce((total, r) => {
+        if (r.date < dateFrom || r.date > dateTo) return total;
+        return total + memberHoursInReservation(r, memberId);
+    }, 0);
+}
 
 // Main App Component
 function App() {
@@ -212,6 +233,15 @@ function App() {
         String(r.companion_member_id) === String(memberId)
     ), [reservations, memberId]);
 
+    const hoursConsumption = useMemo(() => {
+        const today = todayLocalISO();
+        const { start, end } = weekRangeLocalISO(today);
+        return {
+            daily: sumMemberHours(reservations, memberId, today, today),
+            weekly: sumMemberHours(reservations, memberId, start, end)
+        };
+    }, [reservations, memberId]);
+
     const loadError = reservationsError || membersError;
 
     return (
@@ -266,6 +296,19 @@ function App() {
                             <span className={`status-badge ${isOpen ? 'open' : 'closed'}`}>
                                 {isOpen ? 'Local Abierto' : 'Local Cerrado'}
                             </span>
+                            {memberName && (
+                                <div className="hours-consumption">
+                                    <HourConsumptionBar
+                                        label="Consumo diario"
+                                        hours={hoursConsumption.daily}
+                                        limit={DAILY_HOUR_LIMIT}
+                                    />
+                                    <HourConsumptionBar
+                                        label="Consumo semanal"
+                                        hours={hoursConsumption.weekly}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -392,6 +435,31 @@ function App() {
                 />
             </div >
         </>
+    );
+}
+
+// Sin `limit`, la barra no representa un tope: solo acumula visualmente las
+// horas gastadas (escala de referencia fija, no un límite real).
+const NO_LIMIT_SCALE = 7;
+
+function HourConsumptionBar({ label, hours, limit }) {
+    const hasLimit = limit != null;
+    const percent = Math.min(100, (hours / (hasLimit ? limit : NO_LIMIT_SCALE)) * 100);
+    const formatHours = (h) => (h % 1 === 0 ? h : h.toFixed(1)).toString().replace('.', ',');
+
+    return (
+        <div className="hour-bar">
+            <div className="hour-bar-label">
+                <span>{label}</span>
+                <span>{formatHours(hours)}h{hasLimit ? ` / ${formatHours(limit)}h` : ''}</span>
+            </div>
+            <div className="hour-bar-track">
+                <div
+                    className={`hour-bar-fill ${hasLimit && percent >= 100 ? 'full' : ''}`}
+                    style={{ width: `${percent}%` }}
+                />
+            </div>
+        </div>
     );
 }
 

@@ -186,6 +186,40 @@
     color: var(--color-status-closed);
 }
 
+.hours-consumption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+    max-width: 260px;
+}
+
+.hour-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2px;
+}
+
+.hour-bar-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-bg-tertiary);
+    overflow: hidden;
+}
+
+.hour-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--color-accent-primary);
+    transition: width 0.2s ease;
+}
+
+.hour-bar-fill.full {
+    background: var(--color-status-closed);
+}
+
 /* Tabs */
 .tabs-nav {
     display: flex;
