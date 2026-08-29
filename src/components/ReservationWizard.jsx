@@ -9,7 +9,7 @@ import './ReservationWizard.css';
   - tableData: object { id, name, colorClass }
   - checkAvailability: function(tableId, date, time) -> boolean
 */
-export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberCode, memberNumber, reservations, members, onJoinReservation }) {
+export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkAvailability, isLargeFont, setIsLargeFont, memberName, memberId, memberNumber, reservations, members, onJoinReservation }) {
     const [step, setStep] = useState(1);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -112,7 +112,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                                 r.time === slot &&
                                                 r.is_solo === true &&
                                                 !r.companion_name &&
-                                                r.member_id !== memberCode
+                                                String(r.member_id) !== String(memberId)
                                             );
 
                                             // Check if time has already passed for today
@@ -193,7 +193,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                         >
                                             <option value="">-- Selecciona un socio --</option>
                                             {members
-                                                .filter(m => m.id !== memberCode && m.access_code !== memberCode)
+                                                .filter(m => String(m.id) !== String(memberId))
                                                 .map(member => (
                                                     <option key={member.id} value={member.id}>
                                                         {member.name}
@@ -224,7 +224,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <p><strong>Tipo:</strong> {isSolo ? '🎱 Solo (otros pueden unirse)' : `👥 Acompañado${companionMemberId ? ` - ${members.find(m => m.id === companionMemberId)?.name}` : ''}`}</p>
                                     <hr />
                                     <p><strong>Nombre:</strong> {memberName}</p>
-                                    <p><strong>Socio nº:</strong> {memberNumber || memberCode}</p>
+                                    <p><strong>Socio nº:</strong> {memberNumber || '—'}</p>
                                 </div>
 
                                 <div className="step-actions">

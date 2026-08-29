@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMembers } from '../hooks/useMembers';
+import { verifyAccessCode } from '../hooks/useMembers';
 import './AccessPortal.css';
 
 export function AccessPortal({ onAccessGranted }) {
@@ -7,13 +7,18 @@ export function AccessPortal({ onAccessGranted }) {
     const [error, setError] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const [welcomeName, setWelcomeName] = useState('');
-    const { checkAccess, loading } = useMembers();
+    // `loading` venía de un `useMembers()` propio, así que reflejaba la descarga
+    // de la lista de socios y no la validación: el botón decía "VALIDANDO..."
+    // al cargar la página y no mientras validaba.
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (loading || isAnimating) return;
 
-        const result = await checkAccess(code);
+        setLoading(true);
+        const result = await verifyAccessCode(code);
+        setLoading(false);
 
         if (result.success) {
             setWelcomeName(result.name);

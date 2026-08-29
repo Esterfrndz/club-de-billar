@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { TableList } from './components/TableList.jsx'
 import { ReservationWizard } from './components/ReservationWizard.jsx'
 import { AccessPortal } from './components/AccessPortal.jsx'
@@ -11,75 +11,43 @@ import './AppLayout.css'
 
 // Main App Component
 function App() {
-    const { reservations, addReservation, deleteReservation, checkAvailability, joinReservation } = useReservations();
-    const { members, addMember, deleteMember, updateMember, uploadMemberPhoto, loading: membersLoading } = useMembers();
+    // --- Identidad del socio -------------------------------------------------
+    // `memberCode` es la credencial que se envía al servidor en cada operación.
+    // `memberId` es lo que identifica al socio dentro de los datos (reservas,
+    // acompañantes). No mezclar: antes se usaba el código para ambas cosas y
+    // acababa guardado en `reservations`, donde cualquiera podía leerlo.
+    const [memberCode, setMemberCode] = useState(() => sessionStorage.getItem('memberCode') || '');
+    const [memberId, setMemberId] = useState(() => sessionStorage.getItem('memberId') || '');
+    const [memberName, setMemberName] = useState(() => sessionStorage.getItem('memberName') || '');
+    const [memberPhoto, setMemberPhoto] = useState(() => sessionStorage.getItem('memberPhoto') || '');
+    const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem('isAdmin') === 'true');
+
+    const [isPortalLocked, setIsPortalLocked] = useState(() => {
+        return sessionStorage.getItem('accessGranted') !== 'true';
+    });
+
+    const {
+        reservations,
+        addReservation,
+        deleteReservation,
+        checkAvailability,
+        joinReservation,
+        error: reservationsError
+    } = useReservations(memberCode);
+
+    const {
+        members,
+        addMember,
+        deleteMember,
+        updateMemberPhoto,
+        uploadMemberPhoto,
+        loading: membersLoading,
+        error: membersError
+    } = useMembers(memberCode);
+
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
-    const [activeTab, setActiveTab] = useState('servicios'); // 'servicios', 'partidas', 'nosotros', 'mis-reservas', 'todas-reservas', 'socios'
-    const [isPortalLocked, setIsPortalLocked] = useState(() => {
-        const saved = sessionStorage.getItem('accessGranted');
-        return saved !== 'true';
-    });
-    const [memberName, setMemberName] = useState(() => {
-        return sessionStorage.getItem('memberName') || '';
-    });
-    const [memberCode, setMemberCode] = useState(() => {
-        return sessionStorage.getItem('memberCode') || '';
-    });
-    const [memberId, setMemberId] = useState(() => {
-        return sessionStorage.getItem('memberId') || '';
-    });
-    const [memberPhoto, setMemberPhoto] = useState(() => {
-        return sessionStorage.getItem('memberPhoto') || '';
-    });
-
-    const handleGlobalUpdate = async (id, updates) => {
-        const result = await updateMember(id, updates);
-        if (result.success && result.data) {
-            // Sincronizar con el estado global si es el usuario actual usando los datos frescos de Supabase
-            const isSelf = id === memberId || result.data.access_code === memberCode;
-
-            if (isSelf) {
-                if (result.data.name) {
-                    setMemberName(result.data.name);
-                    sessionStorage.setItem('memberName', result.data.name);
-                }
-                if (result.data.photo_url !== undefined) {
-                    setMemberPhoto(result.data.photo_url || '');
-                    sessionStorage.setItem('memberPhoto', result.data.photo_url || '');
-                }
-                if (!memberId && result.data.id) {
-                    setMemberId(result.data.id);
-                    sessionStorage.setItem('memberId', result.data.id);
-                }
-            }
-        }
-        return result;
-    };
-
-    const handleGlobalUpload = async (id, file) => {
-        const result = await uploadMemberPhoto(id, file);
-        if (result.success && result.data) {
-            const isSelf = id === memberId || result.data.access_code === memberCode;
-
-            if (isSelf) {
-                const newPhotoUrl = result.data.photo_url;
-                setMemberPhoto(newPhotoUrl || '');
-                sessionStorage.setItem('memberPhoto', newPhotoUrl || '');
-
-                if (!memberId && result.data.id) {
-                    setMemberId(result.data.id);
-                    sessionStorage.setItem('memberId', result.data.id);
-                }
-            }
-        }
-        return result;
-    };
-
-    const [isAdmin, setIsAdmin] = useState(() => {
-        const saved = sessionStorage.getItem('isAdmin');
-        return saved === 'true';
-    });
+    const [activeTab, setActiveTab] = useState('servicios');
 
     const handleLogout = () => {
         setMemberName('');
@@ -91,35 +59,49 @@ function App() {
         sessionStorage.clear();
         setActiveTab('servicios');
     };
-    // Sincronizar estado del usuario actual con la lista de socios
+
+    // Mantiene el perfil en cabecera al día si un admin cambia tu nombre o foto
+    // mientras estás dentro.
     useEffect(() => {
-        if (!members.length || (!memberId && !memberCode)) return;
+        if (!members.length || !memberId) return;
 
-        const me = members.find(m =>
-            (memberId && String(m.id) === String(memberId)) ||
-            (memberCode && String(m.access_code) === String(memberCode))
-        );
+        const me = members.find(m => String(m.id) === String(memberId));
+        if (!me) return;
 
-        if (me) {
-            if (me.name !== memberName) {
-                setMemberName(me.name);
-                sessionStorage.setItem('memberName', me.name);
-            }
-            if (me.photo_url !== (memberPhoto || null)) {
-                const newPhoto = me.photo_url || '';
-                setMemberPhoto(newPhoto);
-                sessionStorage.setItem('memberPhoto', newPhoto);
-            }
-            if ((me.is_admin || false) !== isAdmin) {
-                setIsAdmin(me.is_admin || false);
-                sessionStorage.setItem('isAdmin', me.is_admin ? 'true' : 'false');
-            }
-            if (!memberId && me.id) {
-                setMemberId(me.id);
-                sessionStorage.setItem('memberId', me.id);
-            }
+        if (me.name !== memberName) {
+            setMemberName(me.name);
+            sessionStorage.setItem('memberName', me.name);
         }
-    }, [members, memberId, memberCode, memberName, memberPhoto, isAdmin]);
+        if ((me.photo_url || '') !== memberPhoto) {
+            setMemberPhoto(me.photo_url || '');
+            sessionStorage.setItem('memberPhoto', me.photo_url || '');
+        }
+        if ((me.is_admin || false) !== isAdmin) {
+            setIsAdmin(me.is_admin || false);
+            sessionStorage.setItem('isAdmin', me.is_admin ? 'true' : 'false');
+        }
+    }, [members, memberId, memberName, memberPhoto, isAdmin]);
+
+    const handlePhotoUpdate = async (id, photoUrl) => {
+        const result = await updateMemberPhoto(id, photoUrl);
+        if (result.success && String(id) === String(memberId)) {
+            const newPhoto = result.data.photo_url || '';
+            setMemberPhoto(newPhoto);
+            sessionStorage.setItem('memberPhoto', newPhoto);
+        }
+        return result;
+    };
+
+    const handlePhotoUpload = async (id, file) => {
+        const result = await uploadMemberPhoto(id, file);
+        if (result.success && String(id) === String(memberId)) {
+            const newPhoto = result.data.photo_url || '';
+            setMemberPhoto(newPhoto);
+            sessionStorage.setItem('memberPhoto', newPhoto);
+        }
+        return result;
+    };
+
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
         return saved ? JSON.parse(saved) : false;
@@ -147,26 +129,30 @@ function App() {
         localStorage.setItem('isLargeFont', JSON.stringify(isLargeFont));
     }, [isLargeFont]);
 
-    // Handle cancellation via URL parameter
+    // Cancelación desde el enlace del mensaje de confirmación.
+    // El `ref` evita que el diálogo se repita: el efecto se re-ejecutaba en
+    // cada render porque `deleteReservation` cambiaba de identidad.
+    const cancelHandled = useRef(false);
     useEffect(() => {
+        if (cancelHandled.current || !memberCode) return;
+
         const params = new URLSearchParams(window.location.search);
         const cancelId = params.get('cancel');
-        if (cancelId) {
-            const confirmCancel = async () => {
-                if (window.confirm("¿Seguro que quieres cancelar tu reserva?")) {
-                    const res = await deleteReservation(cancelId);
-                    if (res.success) {
-                        alert("Reserva cancelada con éxito.");
-                        // Clean up URL
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else {
-                        alert("Error al cancelar: " + res.error);
-                    }
+        if (!cancelId) return;
+
+        cancelHandled.current = true;
+        (async () => {
+            if (window.confirm('¿Seguro que quieres cancelar tu reserva?')) {
+                const res = await deleteReservation(cancelId);
+                if (res.success) {
+                    alert('Reserva cancelada con éxito.');
+                } else {
+                    alert('Error al cancelar: ' + res.error);
                 }
-            };
-            confirmCancel();
-        }
-    }, [deleteReservation]);
+            }
+            window.history.replaceState({}, document.title, window.location.pathname);
+        })();
+    }, [deleteReservation, memberCode]);
 
     const currentHour = new Date().getHours();
     const isOpen = currentHour >= 9 && currentHour < 21;
@@ -194,16 +180,12 @@ function App() {
             data.tableId,
             data.date,
             data.time,
-            memberName,
-            memberCode,
-            '', // No mobile needed now
             data.isSolo,
-            data.companionName,
             data.companionMemberId
         );
 
         if (result.success) {
-            alert("¡Reserva confirmada con éxito! 🎉");
+            alert('¡Reserva confirmada con éxito! 🎉');
             handleCloseWizard();
         } else {
             alert(`Error: ${result.error}`);
@@ -226,20 +208,26 @@ function App() {
     };
 
     const handleJoinReservation = async (reservationId) => {
-        const result = await joinReservation(reservationId, memberName, memberCode);
+        const result = await joinReservation(reservationId);
 
         if (result.success) {
-            alert("¡Te has unido a la reserva con éxito! 🎉");
+            alert('¡Te has unido a la reserva con éxito! 🎉');
         } else {
             alert(`Error: ${result.error}`);
         }
     };
 
-    const currentUser = members.find(m =>
-        (memberId && String(m.id) === String(memberId)) ||
-        (memberCode && String(m.access_code) === String(memberCode))
-    );
-    const memberNumber = currentUser ? members.indexOf(currentUser) + 1 : null;
+    const memberNumber = useMemo(() => {
+        const index = members.findIndex(m => String(m.id) === String(memberId));
+        return index >= 0 ? index + 1 : null;
+    }, [members, memberId]);
+
+    const myReservations = useMemo(() => reservations.filter(r =>
+        String(r.member_id) === String(memberId) ||
+        String(r.companion_member_id) === String(memberId)
+    ), [reservations, memberId]);
+
+    const loadError = reservationsError || membersError;
 
     return (
         <>
@@ -275,6 +263,15 @@ function App() {
                     </div>
                 </nav>
 
+                {/* Aviso de conexión: antes los errores solo iban a la consola,
+                    así que si Supabase estaba caído la app se veía vacía sin
+                    ninguna explicación. */}
+                {loadError && (
+                    <div className="connection-error-banner" role="alert">
+                        ⚠️ {loadError} Comprueba tu conexión y vuelve a intentarlo.
+                    </div>
+                )}
+
                 {/* Hero Section */}
                 <div className="hero-section">
                     <div className="hero-content">
@@ -284,10 +281,7 @@ function App() {
                                     src={memberPhoto}
                                     alt={memberName}
                                     className="hero-icon-img"
-                                    onError={(e) => {
-                                        console.error("Hero image failed to load:", memberPhoto);
-                                        setMemberPhoto('');
-                                    }}
+                                    onError={() => setMemberPhoto('')}
                                 />
                             ) : (
                                 '🏢'
@@ -317,7 +311,7 @@ function App() {
                     >
                         SOBRE MI
                     </button>
-                    {(isAdmin || memberName) && (
+                    {memberName && (
                         <button
                             className={`tab-link ${activeTab === 'mis-reservas' ? 'active' : ''}`}
                             onClick={() => setActiveTab('mis-reservas')}
@@ -365,7 +359,7 @@ function App() {
                             reservations={reservations}
                             onJoinReservation={handleJoinReservation}
                             memberName={memberName}
-                            memberCode={memberCode}
+                            memberId={memberId}
                         />
                     )}
 
@@ -376,13 +370,12 @@ function App() {
                         </div>
                     )}
 
-                    {activeTab === 'mis-reservas' && (isAdmin || memberName) && (
+                    {activeTab === 'mis-reservas' && memberName && (
                         <AdminCalendarView
-                            reservations={reservations.filter(r =>
-                                r.member_id === memberCode || r.companion_member_id === memberCode
-                            )}
+                            reservations={myReservations}
                             onDelete={deleteReservation}
                             isAdmin={false}
+                            currentMemberId={memberId}
                         />
                     )}
 
@@ -391,6 +384,7 @@ function App() {
                             reservations={reservations}
                             onDelete={deleteReservation}
                             isAdmin={true}
+                            currentMemberId={memberId}
                         />
                     )}
 
@@ -399,8 +393,8 @@ function App() {
                             members={members}
                             onAddMember={addMember}
                             onDeleteMember={deleteMember}
-                            onUpdateMember={handleGlobalUpdate}
-                            onUploadPhoto={handleGlobalUpload}
+                            onUpdatePhoto={handlePhotoUpdate}
+                            onUploadPhoto={handlePhotoUpload}
                             loading={membersLoading}
                         />
                     )}
@@ -416,7 +410,7 @@ function App() {
                     isLargeFont={isLargeFont}
                     setIsLargeFont={setIsLargeFont}
                     memberName={memberName}
-                    memberCode={memberCode}
+                    memberId={memberId}
                     memberNumber={memberNumber}
                     reservations={reservations}
                     members={members}

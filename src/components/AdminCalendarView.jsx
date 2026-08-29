@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './AdminCalendarView.css';
 
-export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
+export function AdminCalendarView({ reservations, onDelete, isAdmin = false, currentMemberId = '' }) {
     // Group reservations by date
     const groupedReservations = reservations.reduce((acc, res) => {
         if (!acc[res.date]) acc[res.date] = [];
@@ -12,25 +12,21 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
     // Sort dates
     const sortedDates = Object.keys(groupedReservations).sort();
 
+    const isMine = (value) => String(value) === String(currentMemberId);
+
     const handleDelete = async (id, info, reservation) => {
-        const currentMemberCode = sessionStorage.getItem('memberCode');
-        const isCompanion = !isAdmin && reservation.companion_member_id === currentMemberCode;
+        const isCompanion = !isAdmin && isMine(reservation.companion_member_id);
         const action = isAdmin ? 'eliminar' : (isCompanion ? 'salir de' : 'cancelar');
 
         if (window.confirm(`¿Estás seguro de que quieres ${action} la reserva de ${info}?`)) {
-            console.log('Intentando eliminar/salir de reserva con ID:', id);
-            const result = await onDelete(id, currentMemberCode);
-            console.log('Resultado:', result);
+            // Quién puede borrar qué lo decide el servidor: aquí solo se elige
+            // el texto del mensaje.
+            const result = await onDelete(id);
 
             if (result && !result.success) {
-                console.error('Error:', result.error);
                 alert(`Error al ${action}: ${result.error}`);
-            } else if (result && result.success) {
-                if (result.isLeave) {
-                    alert('Has salido de la reserva exitosamente. La reserva sigue disponible para el jugador principal.');
-                } else {
-                    console.log('Reserva eliminada exitosamente');
-                }
+            } else if (result && result.success && result.isLeave) {
+                alert('Has salido de la reserva exitosamente. La reserva sigue disponible para el jugador principal.');
             }
         }
     };
@@ -63,25 +59,21 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false }) {
                                             <div className="res-details">
                                                 <div className="res-name">
                                                     {res.customer_name}
-                                                    {!isAdmin && res.member_id === sessionStorage.getItem('memberCode') && (
+                                                    {!isAdmin && isMine(res.member_id) && (
                                                         <span className="role-badge">Tú</span>
                                                     )}
                                                 </div>
                                                 {res.companion_name && (
                                                     <div className="res-companion">
                                                         + {res.companion_name}
-                                                        {!isAdmin && res.companion_member_id === sessionStorage.getItem('memberCode') && (
+                                                        {!isAdmin && isMine(res.companion_member_id) && (
                                                             <span className="role-badge">Tú</span>
                                                         )}
                                                     </div>
                                                 )}
                                                 <div className="res-table">Mesa {res.table_id}</div>
-                                                {isAdmin && (
-                                                    <div className="res-meta">
-                                                        <span>Socio: {res.member_id || 'N/A'}</span>
-                                                        <span>Tel: {res.mobile || 'N/A'}</span>
-                                                    </div>
-                                                )}
+                                                {/* Aquí se mostraba `member_id` (que era el código de acceso del
+                                                    socio) y `mobile` (siempre vacío). El nombre ya sale arriba. */}
                                             </div>
                                             <button
                                                 className="btn-delete-res"

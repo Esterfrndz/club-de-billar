@@ -1,166 +1,117 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 
-export function useReservations() {
+export function useReservations(memberCode = '') {
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchReservations();
-    }, []);
-
-    const fetchReservations = async () => {
+    // La lectura sigue siendo directa: tras la migración la tabla ya no
+    // contiene códigos de acceso, y la app necesita ver la ocupación de las
+    // mesas aunque nadie haya entrado todavía.
+    const fetchReservations = useCallback(async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabase
-                .from('reservations')
-                .select('*');
+            setError(null);
+            const { data, error } = await supabase.from('reservations').select('*');
 
             if (error) throw error;
             setReservations(data || []);
         } catch (err) {
             console.error('Error fetching reservations:', err);
-            setError(err.message);
+            setError('No se pudieron cargar las reservas.');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const addReservation = async (tableId, date, time, customerName, memberId = '', mobile = '', isSolo = false, companionName = '', companionMemberId = '') => {
-        // Basic validation
-        if (!tableId || !date || !time || !customerName) {
-            return { success: false, error: "Faltan datos obligatorios" };
-        }
+    useEffect(() => {
+        fetchReservations();
+    }, [fetchReservations]);
 
-        // Check availability strictly against current state (optimistic)
-        // Ideally should double-check on server, but this suffices for now
-        const isTaken = reservations.some(
-            r => r.table_id === tableId && r.date === date && r.time === time
-        );
-
-        if (isTaken) {
-            return { success: false, error: "Este horario ya está reservado" };
-        }
-
+    /**
+     * La disponibilidad la decide el índice único de la base de datos, no el
+     * estado local: antes dos personas en dispositivos distintos podían
+     * reservar el mismo hueco porque cada una miraba su propia copia.
+     */
+    const addReservation = useCallback(async (tableId, date, time, isSolo, companionMemberId = '') => {
         try {
-            const { data, error } = await supabase
-                .from('reservations')
-                .insert([
-                    {
-                        table_id: tableId,
-                        date,
-                        time,
-                        customer_name: customerName,
-                        member_id: memberId,
-                        mobile: mobile,
-                        is_solo: isSolo,
-                        companion_name: companionName || null,
-                        companion_member_id: companionMemberId || null
-                    }
-                ])
-                .select();
+            const { data, error } = await supabase.rpc('create_reservation', {
+                p_code: memberCode,
+                p_table_id: tableId,
+                p_date: date,
+                p_time: time,
+                p_is_solo: isSolo,
+                p_companion_id: companionMemberId || null
+            });
 
             if (error) throw error;
 
-            // Optimistic update or refetch
-            setReservations(prev => [...prev, ...data]);
+            setReservations(prev => [...prev, data]);
             return { success: true, data };
         } catch (err) {
             console.error('Error adding reservation:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [memberCode]);
 
-    const deleteReservation = async (id, memberCode = null) => {
+    const deleteReservation = useCallback(async (id) => {
         try {
-            // First, get the reservation to check if user is companion
-            const reservation = reservations.find(r => r.id === id);
+            const { data, error } = await supabase.rpc('delete_reservation', {
+                p_code: memberCode,
+                p_id: String(id)
+            });
 
-            if (!reservation) {
-                return { success: false, error: "Reserva no encontrada" };
-            }
+            if (error) throw error;
 
-            // If user is the companion (not the creator), just remove companion data
-            if (memberCode && reservation.companion_member_id === memberCode) {
-                const { error } = await supabase
-                    .from('reservations')
-                    .update({
-                        is_solo: true,
-                        companion_name: null,
-                        companion_member_id: null
-                    })
-                    .eq('id', id);
-
-                if (error) throw error;
-
-                // Update local state
+            if (data === 'left') {
+                // Éramos el acompañante: la reserva sigue viva, sin nosotros.
                 setReservations(prev => prev.map(r =>
-                    r.id === id
+                    String(r.id) === String(id)
                         ? { ...r, is_solo: true, companion_name: null, companion_member_id: null }
                         : r
                 ));
                 return { success: true, isLeave: true };
             }
 
-            // Otherwise, delete the entire reservation (user is the creator)
-            const { error } = await supabase
-                .from('reservations')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-
-            setReservations(prev => prev.filter(r => r.id !== id));
+            setReservations(prev => prev.filter(r => String(r.id) !== String(id)));
             return { success: true, isLeave: false };
         } catch (err) {
             console.error('Error deleting reservation:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [memberCode]);
 
-    const getReservationsByDate = (date) => {
-        return reservations.filter(r => r.date === date);
-    };
-
-    // Note: checkAvailability now checks against table_id (DB column) instead of tableId
-    const isSlotOccupied = (tableId, date, time) => {
-        return reservations.some(r => r.table_id === tableId && r.date === date && r.time === time);
-    };
-
-    const joinReservation = async (reservationId, companionName, companionMemberId = '') => {
+    const joinReservation = useCallback(async (reservationId) => {
         try {
-            const { data, error } = await supabase
-                .from('reservations')
-                .update({
-                    is_solo: false,
-                    companion_name: companionName,
-                    companion_member_id: companionMemberId || null
-                })
-                .eq('id', reservationId)
-                .select();
+            const { data, error } = await supabase.rpc('join_reservation', {
+                p_code: memberCode,
+                p_id: String(reservationId)
+            });
 
             if (error) throw error;
 
-            // Update local state
             setReservations(prev => prev.map(r =>
-                r.id === reservationId ? data[0] : r
+                String(r.id) === String(reservationId) ? data : r
             ));
-
             return { success: true, data };
         } catch (err) {
             console.error('Error joining reservation:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [memberCode]);
+
+    const isSlotOccupied = useCallback((tableId, date, time) => {
+        return reservations.some(r => r.table_id === tableId && r.date === date && r.time === time);
+    }, [reservations]);
 
     return {
         reservations,
         addReservation,
         deleteReservation,
-        getReservationsByDate,
         checkAvailability: isSlotOccupied,
         joinReservation,
+        refreshReservations: fetchReservations,
         loading,
         error
     };

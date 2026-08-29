@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './MemberManager.css';
 
-export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMember, onUploadPhoto, loading }) {
+export function MemberManager({ members, onAddMember, onDeleteMember, onUpdatePhoto, onUploadPhoto, loading }) {
     const [newName, setNewName] = useState('');
     const [isSeeding, setIsSeeding] = useState(false);
     const [editingUrls, setEditingUrls] = useState({});
@@ -26,7 +26,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
         const url = editingUrls[id];
         if (url === undefined) return;
 
-        const result = await onUpdateMember(id, { photo_url: url });
+        const result = await onUpdatePhoto(id, url);
         if (result.success) {
             // Clear editing state for this ID
             setEditingUrls(prev => {
@@ -174,7 +174,7 @@ export function MemberManager({ members, onAddMember, onDeleteMember, onUpdateMe
                                         </div>
                                     </td>
                                     <td>
-                                        <span className="access-code-badge">{member.access_code}</span>
+                                        <span className="access-code-badge">{member.access_code || '••••'}</span>
                                     </td>
                                     <td>
                                         {member.is_admin ? (

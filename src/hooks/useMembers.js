@@ -1,60 +1,95 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 
-export function useMembers() {
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+/**
+ * Valida un código de acceso contra el servidor.
+ *
+ * Función suelta a propósito: el portal de acceso solo necesita esto, y antes
+ * montaba un `useMembers()` entero solo para llegar aquí (lo que disparaba una
+ * segunda descarga de la lista de socios en cada carga de página).
+ */
+export async function verifyAccessCode(code) {
+    try {
+        const { data, error } = await supabase.rpc('verify_access_code', { p_code: code });
+
+        if (error) throw error;
+        if (!data || data.length === 0) {
+            return { success: false, error: 'Código incorrecto' };
+        }
+
+        const member = data[0];
+        return {
+            success: true,
+            id: member.id,
+            name: member.name,
+            code,
+            isAdmin: member.is_admin || false,
+            photoUrl: member.photo_url || null
+        };
+    } catch (err) {
+        console.error('Error validando el código:', err);
+        return { success: false, error: 'Error al validar el código' };
+    }
+}
+
+export function useMembers(memberCode = '') {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchMembers();
-    }, []);
-
-    const fetchMembers = async () => {
+    // El servidor decide qué campos devuelve según quién pregunta: `access_code`
+    // solo viaja si el que llama es administrador.
+    const fetchMembers = useCallback(async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabase
-                .from('members')
-                .select('*')
-                .order('name', { ascending: true });
+            setError(null);
+            const { data, error } = await supabase.rpc('list_members', {
+                p_code: memberCode || null
+            });
 
             if (error) throw error;
             setMembers(data || []);
         } catch (err) {
             console.error('Error fetching members:', err);
-            setError(err.message);
+            setError('No se pudo cargar la lista de socios.');
         } finally {
             setLoading(false);
         }
-    };
+    }, [memberCode]);
 
-    const addMember = async (name) => {
-        if (!name) return { success: false, error: "El nombre es obligatorio" };
+    useEffect(() => {
+        fetchMembers();
+    }, [fetchMembers]);
 
-        // Generate random 4-digit code
-        const accessCode = Math.floor(1000 + Math.random() * 9000).toString();
+    const addMember = useCallback(async (name) => {
+        if (!name) return { success: false, error: 'El nombre es obligatorio' };
 
         try {
-            const { data, error } = await supabase
-                .from('members')
-                .insert([{ name, access_code: accessCode }])
-                .select();
+            const { data, error } = await supabase.rpc('admin_add_member', {
+                p_code: memberCode,
+                p_name: name
+            });
 
             if (error) throw error;
-            setMembers(prev => [...prev, ...data].sort((a, b) => a.name.localeCompare(b.name)));
-            return { success: true, data: data[0] };
+
+            const created = data[0];
+            setMembers(prev => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)));
+            return { success: true, data: created };
         } catch (err) {
             console.error('Error adding member:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [memberCode]);
 
-    const deleteMember = async (id) => {
+    const deleteMember = useCallback(async (id) => {
         try {
-            const { error } = await supabase
-                .from('members')
-                .delete()
-                .eq('id', id);
+            const { error } = await supabase.rpc('admin_delete_member', {
+                p_code: memberCode,
+                p_target_id: String(id)
+            });
 
             if (error) throw error;
             setMembers(prev => prev.filter(m => m.id !== id));
@@ -63,72 +98,61 @@ export function useMembers() {
             console.error('Error deleting member:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [memberCode]);
 
-    const checkAccess = async (code) => {
+    /**
+     * Antes esto era `updateMember(id, updates)` con un objeto libre, así que
+     * una llamada manual con `{ is_admin: true }` bastaba para autoascenderse.
+     * Ahora solo existe el camino de la foto, y el servidor comprueba que seas
+     * admin o el dueño de la ficha.
+     */
+    const updateMemberPhoto = useCallback(async (id, photoUrl) => {
         try {
-            const { data, error } = await supabase
-                .from('members')
-                .select('id, name, access_code, is_admin, photo_url')
-                .eq('access_code', code)
-                .single();
-
-            if (error) return { success: false, error: "Código incorrecto" };
-            return {
-                success: true,
-                id: data.id,
-                name: data.name,
-                code: data.access_code,
-                isAdmin: data.is_admin || false,
-                photoUrl: data.photo_url || null
-            };
-        } catch (err) {
-            return { success: false, error: "Error al validar el código" };
-        }
-    };
-
-    const updateMember = async (id, updates) => {
-        try {
-            const { data, error } = await supabase
-                .from('members')
-                .update(updates)
-                .eq('id', id)
-                .select();
+            const { data, error } = await supabase.rpc('set_member_photo', {
+                p_code: memberCode,
+                p_target_id: String(id),
+                p_photo_url: photoUrl || null
+            });
 
             if (error) throw error;
-            setMembers(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
-            return { success: true, data: data[0] };
+
+            const updated = data[0];
+            setMembers(prev => prev.map(m => (m.id === updated.id ? { ...m, ...updated } : m)));
+            return { success: true, data: updated };
         } catch (err) {
-            console.error('Error updating member:', err);
+            console.error('Error updating member photo:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [memberCode]);
 
-    const uploadMemberPhoto = async (id, file) => {
+    const uploadMemberPhoto = useCallback(async (id, file) => {
+        if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
+            return { success: false, error: 'El archivo debe ser una imagen (JPG, PNG, WEBP o GIF).' };
+        }
+        if (file.size > MAX_PHOTO_BYTES) {
+            return { success: false, error: 'La imagen no puede superar los 5 MB.' };
+        }
+
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${id}-${Math.random()}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
+            const fileExt = file.name.split('.').pop().toLowerCase();
+            const filePath = `avatars/${id}-${crypto.randomUUID()}.${fileExt}`;
 
-            // Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
                 .from('member-photos')
                 .upload(filePath, file);
 
             if (uploadError) throw uploadError;
 
-            // Get public URL
             const { data: { publicUrl } } = supabase.storage
                 .from('member-photos')
                 .getPublicUrl(filePath);
 
-            // Update member record with the new photo URL
-            return await updateMember(id, { photo_url: publicUrl });
+            return await updateMemberPhoto(id, publicUrl);
         } catch (err) {
             console.error('Error uploading photo:', err);
             return { success: false, error: err.message };
         }
-    };
+    }, [updateMemberPhoto]);
 
     return {
         members,
@@ -136,9 +160,8 @@ export function useMembers() {
         error,
         addMember,
         deleteMember,
-        updateMember,
+        updateMemberPhoto,
         uploadMemberPhoto,
-        checkAccess,
         refreshMembers: fetchMembers
     };
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './DailyPartidas.css';
 
-export const DailyPartidas = ({ reservations, onJoinReservation, memberName, memberCode }) => {
+export const DailyPartidas = ({ reservations, onJoinReservation, memberName, memberId }) => {
     const [showJoinDialog, setShowJoinDialog] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
 
@@ -46,7 +46,7 @@ export const DailyPartidas = ({ reservations, onJoinReservation, memberName, mem
 
     // Check if a reservation is joinable (solo and not yet joined)
     const isJoinable = (res) => {
-        return res.is_solo === true && !res.companion_name && res.member_id !== memberCode;
+        return res.is_solo === true && !res.companion_name && String(res.member_id) !== String(memberId);
     };
 
     return (

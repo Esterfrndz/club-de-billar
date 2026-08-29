@@ -393,3 +393,26 @@
         font-size: 0.8rem;
     }
 }
+/* Aviso de error de conexión */
+.connection-error-banner {
+    margin: 12px 24px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #fff4f4;
+    border: 1px solid #f0c0c0;
+    color: #a03030;
+    font-size: calc(0.9rem * var(--font-scale, 1));
+    line-height: 1.4;
+}
+
+body.dark-mode .connection-error-banner {
+    background: #3a2020;
+    border-color: #6b3535;
+    color: #ffb0b0;
+}
+
+@media (max-width: 480px) {
+    .connection-error-banner {
+        margin: 12px;
+    }
+}
