@@ -26,3 +26,4 @@ dist-ssr
 # Supabase
 .env
 .env.local
+codigos_nuevos_*.csv

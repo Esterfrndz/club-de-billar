@@ -5,6 +5,7 @@ import './AccessPortal.css';
 export function AccessPortal({ onAccessGranted }) {
     const [code, setCode] = useState('');
     const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
     const [welcomeName, setWelcomeName] = useState('');
     // `loading` venía de un `useMembers()` propio, así que reflejaba la descarga
@@ -17,6 +18,7 @@ export function AccessPortal({ onAccessGranted }) {
         if (loading || isAnimating) return;
 
         setLoading(true);
+        setErrorMessage('');
         const result = await verifyAccessCode(code);
         setLoading(false);
 
@@ -28,6 +30,7 @@ export function AccessPortal({ onAccessGranted }) {
             }, 2000); // Give time for the welcome message
         } else {
             setError(true);
+            setErrorMessage(result.error || 'Código no válido. Contacta con el club si lo has olvidado.');
             setTimeout(() => setError(false), 500);
             setCode('');
         }
@@ -58,9 +61,10 @@ export function AccessPortal({ onAccessGranted }) {
                                         type="password"
                                         inputMode="numeric"
                                         pattern="[0-9]*"
+                                        maxLength={6}
                                         value={code}
-                                        onChange={(e) => setCode(e.target.value)}
-                                        placeholder="Código de 4 dígitos"
+                                        onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        placeholder="Código de 6 dígitos"
                                         autoFocus
                                         required
                                         disabled={loading}
@@ -71,7 +75,7 @@ export function AccessPortal({ onAccessGranted }) {
                                 </button>
                             </form>
 
-                            {error && <p className="error-message">Código no válido. Contacta con el club si lo has olvidado.</p>}
+                            {errorMessage && <p className="error-message">{errorMessage}</p>}
                         </>
                     )}
                 </div>

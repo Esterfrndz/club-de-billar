@@ -15,7 +15,14 @@ export async function verifyAccessCode(code) {
     try {
         const { data, error } = await supabase.rpc('verify_access_code', { p_code: code });
 
-        if (error) throw error;
+        // El bloqueo por demasiados intentos llega como error del RPC, con un
+        // mensaje pensado para mostrarse tal cual (no el genérico de abajo).
+        if (error) {
+            if (error.message?.startsWith('Demasiados intentos')) {
+                return { success: false, error: error.message };
+            }
+            throw error;
+        }
         if (!data || data.length === 0) {
             return { success: false, error: 'Código incorrecto' };
         }
