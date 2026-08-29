@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { todayLocalISO } from '../dateUtils';
 import './ReservationWizard.css';
 
 /*
@@ -25,8 +26,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
             setTime('');
             setIsSolo(null);
             setCompanionMemberId('');
-            const today = new Date().toISOString().split('T')[0];
-            setDate(today);
+            setDate(todayLocalISO());
         }
     }, [isOpen]);
 
@@ -96,7 +96,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             type="date"
                                             value={date}
                                             onChange={e => { setDate(e.target.value); setTime(''); }}
-                                            min={new Date().toISOString().split('T')[0]}
+                                            min={todayLocalISO()}
                                         />
                                     </div>
 
@@ -117,7 +117,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
 
                                             // Check if time has already passed for today
                                             const now = new Date();
-                                            const today = now.toISOString().split('T')[0];
+                                            const today = todayLocalISO();
                                             const currentHour = now.getHours();
                                             const slotHour = parseInt(slot.split(':')[0]);
                                             const isPast = date === today && slotHour < currentHour;

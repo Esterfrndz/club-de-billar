@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
+import { todayLocalISO } from '../dateUtils';
 import './DailyPartidas.css';
 
 export const DailyPartidas = ({ reservations, onJoinReservation, memberName, memberId }) => {
     const [showJoinDialog, setShowJoinDialog] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
 
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayLocalISO();
 
     // Filter reservations for today and sort by time
     const todayReservations = reservations
