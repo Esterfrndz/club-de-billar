@@ -36,7 +36,7 @@
 
 .welcome-name {
     font-size: 14px;
-    color: #3b82f6;
+    color: var(--color-accent-primary);
     font-weight: 600;
 }
 
@@ -71,7 +71,7 @@
 
 .font-control-btn.active {
     background: var(--color-accent-primary);
-    color: white;
+    color: var(--color-on-accent);
 }
 
 .font-control-btn:hover:not(.active) {
@@ -80,7 +80,7 @@
 
 .login-trigger-btn {
     background-color: var(--color-accent-primary);
-    color: white;
+    color: var(--color-on-accent);
     border: none;
     border-radius: var(--border-radius-md);
     padding: 8px 16px;
@@ -149,7 +149,7 @@
     width: 80px;
     height: 80px;
     background-color: var(--color-bg-secondary);
-    border: 3px solid white;
+    border: 3px solid var(--color-accent-secondary);
     border-radius: var(--border-radius-circle);
     display: flex;
     align-items: center;
@@ -157,7 +157,7 @@
     font-size: 2rem;
     color: var(--color-text-secondary);
     overflow: hidden;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-lg);
     flex-shrink: 0;
 }
 
@@ -249,14 +249,21 @@
 
 .tab-link-calendario {
     padding: var(--spacing-sm) var(--spacing-md);
-    color: white;
-    font-weight: 600;
+    color: var(--color-on-accent);
+    font-weight: 700;
     font-size: 0.9rem;
     text-transform: uppercase;
-    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    transition: filter 0.2s ease, transform 0.15s ease;
     background-color: var(--color-accent-secondary);
     border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
     align-self: center;
+}
+
+.tab-link-calendario:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
 }
 
 /* Section Header & Search */

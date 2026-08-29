@@ -189,7 +189,7 @@
 
 .join-slot-button {
     background: var(--color-accent-primary);
-    color: white;
+    color: var(--color-on-accent);
     border: none;
     padding: 4px 8px;
     border-radius: 12px;
@@ -200,7 +200,7 @@
 }
 
 .join-slot-button:hover {
-    background: #1976D2;
+    filter: brightness(1.1);
     transform: scale(1.05);
 }
 
@@ -211,7 +211,7 @@
 
 .time-slot.selected {
     background-color: var(--color-accent-primary);
-    color: white;
+    color: var(--color-on-accent);
     border-color: var(--color-accent-primary);
 }
 
@@ -358,13 +358,17 @@
 }
 
 .type-button.selected {
-    background: var(--color-accent-primary);
+    background: color-mix(in srgb, var(--color-accent-primary) 70%, black 30%);
     border-color: var(--color-accent-primary);
-    color: white;
+    color: #FFFFFF;
+}
+
+.type-button.selected .type-label {
+    color: #FFFFFF;
 }
 
 .type-button.selected .type-hint {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .type-icon {

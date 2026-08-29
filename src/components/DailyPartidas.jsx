@@ -85,12 +85,6 @@ export const DailyPartidas = ({ reservations, onJoinReservation, memberName, mem
                                         </div>
                                     )}
                                 </div>
-                                <div className="partida-info">
-                                    <span className="info-item">
-                                        <span className="info-icon">📍</span> Club de billar Paterna
-                                    </span>
-                                </div>
-
                                 {/* Show reservation status */}
                                 <div className="reservation-status">
                                     {res.is_solo && !res.companion_name ? (

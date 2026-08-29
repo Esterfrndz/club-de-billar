@@ -200,7 +200,7 @@
 .join-button {
     margin-top: 12px;
     background: var(--color-accent-primary);
-    color: white;
+    color: var(--color-on-accent);
     border: none;
     padding: 10px 24px;
     border-radius: var(--border-radius-md);
@@ -211,7 +211,7 @@
 }
 
 .join-button:hover {
-    background: #1976D2;
+    filter: brightness(1.1);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -292,11 +292,11 @@
 .btn-confirm {
     background: var(--color-accent-primary);
     border: none;
-    color: white;
+    color: var(--color-on-accent);
 }
 
 .btn-confirm:hover {
-    background: #1976D2;
+    filter: brightness(1.1);
 }
 
 @keyframes slideUp {

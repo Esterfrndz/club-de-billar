@@ -94,8 +94,8 @@
 
 .access-form input:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    border-color: #F0C14B;
+    box-shadow: 0 0 0 4px rgba(240, 193, 75, 0.25);
 }
 
 /* El espaciado ancho de letras es para cuando ya escribiste el código
@@ -109,22 +109,22 @@
 }
 
 .btn-access {
-    background: #3b82f6;
-    color: white;
+    background: #F0C14B;
+    color: #201A05;
     border: none;
     padding: 16px;
     border-radius: 12px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.05em;
 }
 
 .btn-access:hover {
-    background: #2563eb;
+    background: #E3B23C;
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(240, 193, 75, 0.4);
 }
 
 .btn-access:active {
@@ -150,7 +150,7 @@
 
 .member-welcome-name {
     font-size: 32px !important;
-    color: #3b82f6 !important;
+    color: #F0C14B !important;
     font-weight: 800 !important;
     margin-top: 8px;
     letter-spacing: -0.02em;
@@ -168,7 +168,7 @@
 .loading-bar {
     width: 0%;
     height: 100%;
-    background: #3b82f6;
+    background: #F0C14B;
     animation: loadingProgress 2s linear forwards;
 }
 
