@@ -102,25 +102,10 @@ function App() {
         return result;
     };
 
-    const [darkMode, setDarkMode] = useState(() => {
-        const saved = localStorage.getItem('darkMode');
-        return saved ? JSON.parse(saved) : false;
-    });
-
     const [isLargeFont, setIsLargeFont] = useState(() => {
         const saved = localStorage.getItem('isLargeFont');
         return saved ? JSON.parse(saved) : false;
     });
-
-    // Handle Dark Mode
-    useEffect(() => {
-        if (darkMode) {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-        localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    }, [darkMode]);
 
     // Handle Font Scale
     useEffect(() => {
@@ -248,13 +233,6 @@ function App() {
                                 A
                             </button>
                         </div>
-                        <button
-                            className={`theme-toggle ${darkMode ? 'dark' : 'light'}`}
-                            onClick={() => setDarkMode(!darkMode)}
-                            title={darkMode ? 'Modo claro' : 'Modo oscuro'}
-                        >
-                            {darkMode ? '☀️' : '🌙'}
-                        </button>
                         {memberName && (
                             <div className="admin-menu">
                                 <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión" style={{ marginLeft: 0 }}>SALIR</button>

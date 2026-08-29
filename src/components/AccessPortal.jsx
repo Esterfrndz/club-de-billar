@@ -51,7 +51,7 @@ export function AccessPortal({ onAccessGranted }) {
                         </div>
                     ) : (
                         <>
-                            <div className="access-logo">🎱</div>
+                            <img src="/club-logo.jpg" alt="Club de Billar Paterna" className="access-logo" />
                             <h1>Club de billar Paterna</h1>
                             <p>Por favor, introduce tu número de acceso de socio.</p>
 
