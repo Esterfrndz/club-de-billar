@@ -286,6 +286,16 @@
     justify-content: center;
     font-size: 1.2rem;
     flex-shrink: 0;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.sidebar-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: calc(var(--border-radius-md) - 2px);
+    background: #ffffff;
 }
 
 .text-sm {

@@ -20,6 +20,16 @@
     justify-content: center;
     font-size: 1.5rem;
     margin-right: var(--spacing-lg);
+    overflow: hidden;
+    padding: 3px;
+}
+
+.row-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #ffffff;
 }
 
 .icon-blue {

@@ -254,16 +254,12 @@ function App() {
                 <div className="hero-section">
                     <div className="hero-content">
                         <div className="hero-icon">
-                            {memberPhoto ? (
-                                <img
-                                    src={memberPhoto}
-                                    alt={memberName}
-                                    className="hero-icon-img"
-                                    onError={() => setMemberPhoto('')}
-                                />
-                            ) : (
-                                '🏢'
-                            )}
+                            <img
+                                src={memberPhoto || '/club-logo.jpg'}
+                                alt={memberName || 'Club de billar Paterna'}
+                                className="hero-icon-img"
+                                onError={() => memberPhoto && setMemberPhoto('')}
+                            />
                         </div>
                         <div className="hero-details">
                             <h1>{memberName ? `Bienvenido ${memberName}` : 'Club de billar Paterna'}</h1>

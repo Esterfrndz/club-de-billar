@@ -5,7 +5,7 @@ export function TableCard({ id, name, colorClass, onReserve }) {
     return (
         <div className="table-row">
             <div className={`row-icon ${colorClass}`}>
-                🎱
+                <img src="/pool-table.png" alt="" className="row-icon-img" />
             </div>
 
             <div className="row-content">

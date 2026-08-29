@@ -254,7 +254,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                             </div>
 
                             <div className="sidebar-item">
-                                <div className={`sidebar-icon ${tableData.colorClass}`}>🎱</div>
+                                <div className={`sidebar-icon ${tableData.colorClass}`}>
+                                    <img src="/pool-table.png" alt="" className="sidebar-icon-img" />
+                                </div>
                                 <div>
                                     <strong>{tableData.name}</strong>
                                     <div className="text-sm">1 hora</div>
