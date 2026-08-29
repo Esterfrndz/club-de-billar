@@ -1,0 +1,34 @@
+name: Supabase keep-alive
+
+on:
+  schedule:
+    # Runs every 3 days at 09:00 UTC — well inside Supabase's 7-day inactivity window
+    - cron: "0 9 */3 * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Missing SUPABASE_URL or SUPABASE_ANON_KEY secrets" >&2
+            exit 1
+          fi
+
+          status=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/reservations?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          echo "HTTP status: $status"
+          cat /tmp/response.json
+
+          if [ "$status" -ge 400 ]; then
+            echo "Ping failed with status $status" >&2
+            exit 1
+          fi
