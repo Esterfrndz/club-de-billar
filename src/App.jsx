@@ -5,6 +5,7 @@ import { AccessPortal } from './components/AccessPortal.jsx'
 import { AdminCalendarView } from './components/AdminCalendarView.jsx'
 import { MemberManager } from './components/MemberManager.jsx'
 import { DailyPartidas } from './components/DailyPartidas.jsx'
+import { UsageInfo } from './components/UsageInfo.jsx'
 import { useReservations } from './hooks/useReservations.js'
 import { useMembers } from './hooks/useMembers.js'
 import { todayLocalISO, weekRangeLocalISO } from './dateUtils.js'
@@ -322,12 +323,6 @@ function App() {
                     >
                         RESERVAR
                     </button>
-                    <button
-                        className={`tab-link ${activeTab === 'nosotros' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('nosotros')}
-                    >
-                        SOBRE MI
-                    </button>
                     {memberName && (
                         <button
                             className={`tab-link ${activeTab === 'mis-reservas' ? 'active' : ''}`}
@@ -341,6 +336,12 @@ function App() {
                         onClick={() => setActiveTab('partidas')}
                     >
                         PARTIDAS DE HOY
+                    </button>
+                    <button
+                        className={`tab-link ${activeTab === 'info-uso' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('info-uso')}
+                    >
+                        INFO DE USO
                     </button>
                     {isAdmin && (
                         <button
@@ -380,12 +381,7 @@ function App() {
                         />
                     )}
 
-                    {activeTab === 'nosotros' && (
-                        <div style={{ padding: '40px 24px', textAlign: 'center', color: '#666' }}>
-                            <h2>Sobre Mi</h2>
-                            <p>Bienvenidos al Club de billar Paterna. Un espacio dedicado al deporte y la convivencia.</p>
-                        </div>
-                    )}
+                    {activeTab === 'info-uso' && <UsageInfo />}
 
                     {activeTab === 'mis-reservas' && memberName && (
                         <AdminCalendarView
