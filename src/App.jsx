@@ -188,7 +188,10 @@ function App() {
             data.date,
             data.time,
             data.isSolo,
-            data.companionMemberId
+            data.companionMemberId,
+            data.category,
+            data.gameMode,
+            data.allowJoin
         );
 
         if (result.success) {

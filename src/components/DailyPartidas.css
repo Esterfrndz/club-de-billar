@@ -310,3 +310,34 @@
         transform: translateY(0);
     }
 }
+/* Categoría y modalidad de la partida */
+.partida-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs, 6px);
+    margin-bottom: var(--spacing-xs, 6px);
+}
+
+.partida-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Partida en solitario que no admite acompañantes */
+.status-badge.closed {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.dialog-note {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin: var(--spacing-sm, 12px) 0 0;
+}

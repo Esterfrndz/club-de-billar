@@ -338,6 +338,9 @@
 
 .type-button {
     background: var(--color-bg-secondary);
+    /* Sin esto el botón usa el color por defecto del navegador (casi negro),
+       que sobre el fondo oscuro del club era ilegible. */
+    color: var(--color-text-primary);
     border: 2px solid var(--color-border);
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-xl);
@@ -379,6 +382,7 @@
 .type-label {
     font-weight: 600;
     font-size: 1.1rem;
+    color: var(--color-text-primary);
 }
 
 .type-hint {
@@ -429,6 +433,71 @@
     border-color: var(--color-accent-primary);
 }
 
+.choice-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.choice-group-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.95rem;
+}
+
+/* Se ajusta al número de opciones (3 categorías, 4 modalidades) y son algo
+   más compactas que los botones de tipo. */
+.reservation-type-buttons.choice-buttons {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: 0;
+}
+
+.choice-buttons .type-button {
+    padding: var(--spacing-lg) var(--spacing-md);
+}
+
+.choice-buttons .type-icon {
+    font-size: 2rem;
+}
+
+.choice-buttons .type-label {
+    font-size: 1rem;
+}
+
+.allow-join-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.allow-join-btn {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 14px 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.allow-join-btn:hover {
+    border-color: var(--color-accent-primary);
+}
+
+.allow-join-btn.selected {
+    background: color-mix(in srgb, var(--color-accent-primary) 70%, black 30%);
+    border-color: var(--color-accent-primary);
+    color: #FFFFFF;
+}
+
+.allow-join-hint {
+    margin: var(--spacing-sm) 0 0;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -450,7 +519,9 @@
         border-top: 1px solid var(--color-bg-tertiary);
     }
 
-    .reservation-type-buttons {
+    .reservation-type-buttons,
+    .reservation-type-buttons.choice-buttons,
+    .allow-join-buttons {
         grid-template-columns: 1fr;
     }
 }

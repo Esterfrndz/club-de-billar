@@ -34,7 +34,7 @@ export function useReservations(memberCode = '') {
      * estado local: antes dos personas en dispositivos distintos podían
      * reservar el mismo hueco porque cada una miraba su propia copia.
      */
-    const addReservation = useCallback(async (tableId, date, time, isSolo, companionMemberId = '') => {
+    const addReservation = useCallback(async (tableId, date, time, isSolo, companionMemberId = '', category = '', gameMode = '', allowJoin = true) => {
         try {
             const { data, error } = await supabase.rpc('create_reservation', {
                 p_code: memberCode,
@@ -42,7 +42,10 @@ export function useReservations(memberCode = '') {
                 p_date: date,
                 p_time: time,
                 p_is_solo: isSolo,
-                p_companion_id: companionMemberId || null
+                p_companion_id: companionMemberId || null,
+                p_category: category || null,
+                p_game_mode: gameMode || null,
+                p_allow_join: allowJoin
             });
 
             if (error) throw error;

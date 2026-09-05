@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import './AdminCalendarView.css';
 
+// Etiquetas de los valores que guarda la reserva (migración 006).
+const CATEGORY_LABELS = {
+    principiante: 'Principiante',
+    avanzado: 'Avanzado',
+    competitivo: 'Competitivo',
+};
+
+const GAME_MODE_LABELS = {
+    tres_bandas: 'Tres bandas',
+    libre: 'Libre',
+    una_banda: 'Una banda',
+    cuadro: 'Cuadro (Balkline)',
+};
+
 export function AdminCalendarView({ reservations, onDelete, isAdmin = false, currentMemberId = '' }) {
     // Group reservations by date
     const groupedReservations = reservations.reduce((acc, res) => {
@@ -72,6 +86,13 @@ export function AdminCalendarView({ reservations, onDelete, isAdmin = false, cur
                                                     </div>
                                                 )}
                                                 <div className="res-table">Mesa {res.table_id}</div>
+                                                {(res.game_mode || res.category) && (
+                                                    <div className="res-modalidad">
+                                                        {[GAME_MODE_LABELS[res.game_mode], CATEGORY_LABELS[res.category]]
+                                                            .filter(Boolean)
+                                                            .join(' · ')}
+                                                    </div>
+                                                )}
                                                 {/* Aquí se mostraba `member_id` (que era el código de acceso del
                                                     socio) y `mobile` (siempre vacío). El nombre ya sale arriba. */}
                                             </div>

@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { todayLocalISO } from '../dateUtils';
 import './ReservationWizard.css';
 
+// Valores tal y como se guardan en la base de datos (ver migración 006).
+const CATEGORIES = [
+    { value: 'principiante', icon: '🌱', label: 'Principiante', hint: 'Estoy empezando' },
+    { value: 'avanzado', icon: '⭐', label: 'Avanzado', hint: 'Ya tengo experiencia' },
+    { value: 'competitivo', icon: '🏆', label: 'Competitivo', hint: 'Juego competición' },
+];
+
+const GAME_MODES = [
+    { value: 'tres_bandas', icon: '🎱', label: 'Tres bandas', hint: 'Carambola a tres bandas' },
+    { value: 'libre', icon: '🎯', label: 'Libre', hint: 'Carambola libre' },
+    { value: 'una_banda', icon: '↩️', label: 'Una banda', hint: 'Carambola a una banda' },
+    { value: 'cuadro', icon: '🔲', label: 'Cuadro', hint: 'Balkline' },
+];
+
 /*
   Props:
   - isOpen: boolean
@@ -16,6 +30,11 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
     const [time, setTime] = useState('');
     const [isSolo, setIsSolo] = useState(null); // null, true, or false
     const [companionMemberId, setCompanionMemberId] = useState('');
+    const [category, setCategory] = useState('');
+    const [gameMode, setGameMode] = useState('');
+    // Solo se usa cuando isSolo === true: si el titular deja que otro socio
+    // se una a su partida.
+    const [allowJoin, setAllowJoin] = useState(true);
 
     // No step 2 formData needed now
 
@@ -26,6 +45,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
             setTime('');
             setIsSolo(null);
             setCompanionMemberId('');
+            setCategory('');
+            setGameMode('');
+            setAllowJoin(true);
             setDate(todayLocalISO());
         }
     }, [isOpen]);
@@ -33,10 +55,10 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
     if (!isOpen || !tableData) return null;
 
     const handleNextFromTime = () => setStep(2); // Go to solo/accompanied selection
-    const handleNextFromType = () => setStep(3); // Go to summary
+    const handleNextFromType = () => setStep(3); // Go to category/game mode
+    const handleNextFromProfile = () => setStep(4); // Go to summary
     const handleBack = () => {
-        if (step === 3) setStep(2);
-        else if (step === 2) setStep(1);
+        if (step > 1) setStep(step - 1);
     };
 
     const handleSubmit = () => {
@@ -47,13 +69,17 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
             time,
             isSolo,
             companionName: isSolo ? '' : (companionMember?.name || ''),
-            companionMemberId: isSolo ? '' : companionMemberId
+            companionMemberId: isSolo ? '' : companionMemberId,
+            category,
+            gameMode,
+            allowJoin: isSolo ? allowJoin : false
         });
     };
 
     // Helper to checking validity for steps
     const isStep1Valid = date && time;
     const isStep2Valid = isSolo !== null && (isSolo === true || companionMemberId !== '');
+    const isStep3Valid = category !== '' && gameMode !== '';
 
     return (
         <div className="wizard-overlay">
@@ -76,6 +102,8 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                         <div className={`step-circle ${step === 2 ? 'active' : ''}`}>2</div>
                         <div className="step-line"></div>
                         <div className={`step-circle ${step === 3 ? 'active' : ''}`}>3</div>
+                        <div className="step-line"></div>
+                        <div className={`step-circle ${step === 4 ? 'active' : ''}`}>4</div>
                     </div>
                 </div>
 
@@ -111,6 +139,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                                 r.date === date &&
                                                 r.time === slot &&
                                                 r.is_solo === true &&
+                                                r.allow_join !== false &&
                                                 !r.companion_name &&
                                                 String(r.member_id) !== String(memberId)
                                             );
@@ -170,18 +199,43 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     >
                                         <span className="type-icon">🎱</span>
                                         <span className="type-label">Juego Solo</span>
-                                        <span className="type-hint">Otros pueden unirse</span>
+                                        <span className="type-hint">Tú decides si pueden unirse</span>
                                     </button>
 
                                     <button
                                         className={`type-button ${isSolo === false ? 'selected' : ''}`}
-                                        onClick={() => setIsSolo(false)}
+                                        onClick={() => { setIsSolo(false); setAllowJoin(true); }}
                                     >
                                         <span className="type-icon">👥</span>
                                         <span className="type-label">Juego Acompañado</span>
                                         <span className="type-hint">Con un compañero</span>
                                     </button>
                                 </div>
+
+                                {isSolo === true && (
+                                    <div className="companion-input-group">
+                                        <label>¿Permites que otro socio se una a tu partida?</label>
+                                        <div className="allow-join-buttons">
+                                            <button
+                                                className={`allow-join-btn ${allowJoin ? 'selected' : ''}`}
+                                                onClick={() => setAllowJoin(true)}
+                                            >
+                                                ✅ Sí, pueden unirse
+                                            </button>
+                                            <button
+                                                className={`allow-join-btn ${!allowJoin ? 'selected' : ''}`}
+                                                onClick={() => setAllowJoin(false)}
+                                            >
+                                                🔒 No, juego solo
+                                            </button>
+                                        </div>
+                                        <p className="allow-join-hint">
+                                            {allowJoin
+                                                ? 'Si alguien se une, la partida pasa a contarte 30 min en vez de 1 hora.'
+                                                : 'Nadie podrá unirse. La partida te cuenta 1 hora completa.'}
+                                        </p>
+                                    </div>
+                                )}
 
                                 {isSolo === false && (
                                     <div className="companion-input-group">
@@ -210,9 +264,52 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                             </div>
                         )}
 
-                        {/* Step 2 removed */}
-
                         {step === 3 && (
+                            <div className="step-content">
+                                <h2>Categoría y modalidad</h2>
+                                <p className="step-description">Indica tu categoría como jugador y la modalidad a la que vas a jugar</p>
+
+                                <div className="choice-group">
+                                    <label className="choice-group-label">Tu categoría</label>
+                                    <div className="reservation-type-buttons choice-buttons">
+                                        {CATEGORIES.map(option => (
+                                            <button
+                                                key={option.value}
+                                                className={`type-button ${category === option.value ? 'selected' : ''}`}
+                                                onClick={() => setCategory(option.value)}
+                                            >
+                                                <span className="type-icon">{option.icon}</span>
+                                                <span className="type-label">{option.label}</span>
+                                                <span className="type-hint">{option.hint}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="choice-group">
+                                    <label className="choice-group-label">Modalidad de juego</label>
+                                    <div className="reservation-type-buttons choice-buttons">
+                                        {GAME_MODES.map(option => (
+                                            <button
+                                                key={option.value}
+                                                className={`type-button ${gameMode === option.value ? 'selected' : ''}`}
+                                                onClick={() => setGameMode(option.value)}
+                                            >
+                                                <span className="type-icon">{option.icon}</span>
+                                                <span className="type-label">{option.label}</span>
+                                                <span className="type-hint">{option.hint}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="step-actions">
+                                    <button className="btn-next" disabled={!isStep3Valid} onClick={handleNextFromProfile}>Continuar</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 4 && (
                             <div className="step-content">
                                 <h2>Resumen de la reserva</h2>
                                 <p className="summary-text">Por favor revisa los datos antes de confirmar.</p>
@@ -222,6 +319,11 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <p><strong>Fecha:</strong> {formatDate(date)}</p>
                                     <p><strong>Hora:</strong> {time}</p>
                                     <p><strong>Tipo:</strong> {isSolo ? '🎱 Solo (otros pueden unirse)' : `👥 Acompañado${companionMemberId ? ` - ${members.find(m => m.id === companionMemberId)?.name}` : ''}`}</p>
+                                    {isSolo && (
+                                        <p><strong>¿Pueden unirse?:</strong> {allowJoin ? 'Sí' : 'No'}</p>
+                                    )}
+                                    <p><strong>Categoría:</strong> {CATEGORIES.find(c => c.value === category)?.label || '—'}</p>
+                                    <p><strong>Modalidad:</strong> {GAME_MODES.find(m => m.value === gameMode)?.label || '—'}</p>
                                     <hr />
                                     <p><strong>Nombre:</strong> {memberName}</p>
                                     <p><strong>Socio nº:</strong> {memberNumber || '—'}</p>
@@ -261,6 +363,8 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                     <strong>{tableData.name}</strong>
                                     <div className="text-sm">1 hora</div>
                                     {date && time && <div className="text-sm highlight">{formatDate(date)} a las {time}</div>}
+                                    {gameMode && <div className="text-sm">{GAME_MODES.find(m => m.value === gameMode)?.label}</div>}
+                                    {category && <div className="text-sm">Categoría: {CATEGORIES.find(c => c.value === category)?.label}</div>}
                                 </div>
                             </div>
 
