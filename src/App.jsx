@@ -169,6 +169,7 @@ function App() {
         { id: 1, name: 'Mesa 1 - Sagredo', colorClass: 'icon-blue' },
         { id: 2, name: 'Mesa 2 - Liern', colorClass: 'icon-red' },
         { id: 3, name: 'Mesa 3 - Bailen', colorClass: 'icon-green' },
+        { id: 4, name: 'Mesa 4 - Escuela', colorClass: 'icon-gold' },
     ];
 
     const handleOpenReserve = (tableId) => {
