@@ -124,6 +124,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             type="date"
                                             value={date}
                                             onChange={e => { setDate(e.target.value); setTime(''); }}
+                                            // Abre el calendario al pulsar en cualquier parte del campo, no solo en el icono.
+                                            onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* navegador sin soporte */ } }}
+                                            style={{ cursor: 'pointer' }}
                                             min={todayLocalISO()}
                                         />
                                     </div>
