@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { todayLocalISO } from '../dateUtils';
+import { todayLocalISO, maxBookableDateISO } from '../dateUtils';
 import './ReservationWizard.css';
 
 // Valores tal y como se guardan en la base de datos (ver migración 006).
@@ -125,12 +125,18 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             value={date}
                                             onChange={e => { setDate(e.target.value); setTime(''); }}
                                             min={todayLocalISO()}
+                                            max={maxBookableDateISO()}
                                         />
                                     </div>
+                                    {date > maxBookableDateISO() && (
+                                        <p className="step-description">
+                                            Las reservas para el día siguiente se abren a las 21:00.
+                                        </p>
+                                    )}
 
                                     <label>Horarios disponibles</label>
                                     <div className="time-slots-grid">
-                                        {['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30'].map(slot => {
+                                        {['09:00', '10:30', '12:00', '16:00', '17:30', '19:00'].map(slot => {
                                             const isTaken = checkAvailability(tableData.id, date, slot);
 
                                             // Find if this slot is a solo reservation
@@ -152,7 +158,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             const [slotH, slotM] = slot.split(':').map(Number);
                                             const isPast = date === today && slotH * 60 + slotM + 90 <= nowMinutes;
 
-                                            const isDisabled = (isTaken && !soloReservation) || isPast;
+                                            const isNotOpenYet = date > maxBookableDateISO();
+
+                                            const isDisabled = (isTaken && !soloReservation) || isPast || isNotOpenYet;
 
                                             return (
                                                 <div key={slot} className="time-slot-wrapper">

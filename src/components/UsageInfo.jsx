@@ -2,6 +2,10 @@ import './UsageInfo.css';
 
 const RULES = [
     {
+        title: 'Horario',
+        text: 'Mañanas de 9:00 a 13:30 y tardes de 16:00 a 20:30. Las reservas para el día siguiente se abren a las 21:00.',
+    },
+    {
         title: 'Límite diario',
         text: 'Cada sesión dura 1 h 30 min. Máximo una sesión (1:30) de juego al día por socio.',
     },

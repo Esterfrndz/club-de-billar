@@ -164,8 +164,11 @@ function App() {
         })();
     }, [deleteReservation, memberCode]);
 
-    const currentHour = new Date().getHours();
-    const isOpen = currentHour >= 9 && currentHour < 21;
+    // Horario: mañanas de 9:00 a 13:30 y tardes de 16:00 a 20:30.
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const isOpen = (currentMinutes >= 9 * 60 && currentMinutes < 13 * 60 + 30) ||
+        (currentMinutes >= 16 * 60 && currentMinutes < 20 * 60 + 30);
 
     // Static list of tables with specific names/colors from reference
     const tablesData = [

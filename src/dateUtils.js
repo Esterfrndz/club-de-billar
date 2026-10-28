@@ -15,6 +15,24 @@ export function todayLocalISO() {
     return `${year}-${month}-${day}`;
 }
 
+/** Hora local a partir de la cual se abren las reservas del día siguiente. */
+export const NEXT_DAY_BOOKING_HOUR = 21;
+
+/**
+ * Última fecha (YYYY-MM-DD, hora local) que se puede reservar: hoy, o mañana
+ * si ya son las 21:00 o más. El servidor aplica la misma regla.
+ */
+export function maxBookableDateISO() {
+    const now = new Date();
+    if (now.getHours() >= NEXT_DAY_BOOKING_HOUR) {
+        now.setDate(now.getDate() + 1);
+    }
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 /**
  * Rango [lunes, domingo] (YYYY-MM-DD, hora local) de la semana que contiene
  * `dateISO`. Se usa para agregar el consumo semanal de horas de un socio.
