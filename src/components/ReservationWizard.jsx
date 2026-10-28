@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { todayLocalISO, isNextDayNotOpenYet } from '../dateUtils';
+import { todayLocalISO, isNextDayClosed } from '../dateUtils';
 import './ReservationWizard.css';
 
 // Valores tal y como se guardan en la base de datos (ver migración 006).
@@ -130,9 +130,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             min={todayLocalISO()}
                                         />
                                     </div>
-                                    {isNextDayNotOpenYet(date) && (
+                                    {isNextDayClosed(date) && (
                                         <p className="step-description">
-                                            Las reservas para el día siguiente se abren a las 21:00.
+                                            Las reservas para el día siguiente se cierran a las 21:00.
                                         </p>
                                     )}
 
@@ -160,9 +160,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             const [slotH, slotM] = slot.split(':').map(Number);
                                             const isPast = date === today && slotH * 60 + slotM + 90 <= nowMinutes;
 
-                                            const isNotOpenYet = isNextDayNotOpenYet(date);
+                                            const isClosed = isNextDayClosed(date);
 
-                                            const isDisabled = (isTaken && !soloReservation) || isPast || isNotOpenYet;
+                                            const isDisabled = (isTaken && !soloReservation) || isPast || isClosed;
 
                                             return (
                                                 <div key={slot} className="time-slot-wrapper">

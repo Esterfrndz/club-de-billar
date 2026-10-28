@@ -15,17 +15,17 @@ export function todayLocalISO() {
     return `${year}-${month}-${day}`;
 }
 
-/** Hora local a partir de la cual se abren las reservas del día siguiente. */
+/** Hora local a partir de la cual se cierran las reservas del día siguiente. */
 export const NEXT_DAY_BOOKING_HOUR = 21;
 
 /**
- * true si `dateISO` es mañana y todavía no son las 21:00: las reservas del día
- * siguiente se abren a esa hora. Hoy y pasado mañana en adelante se pueden
+ * true si `dateISO` es mañana y ya son las 21:00 o más: las reservas del día
+ * siguiente se cierran a esa hora. Hoy y pasado mañana en adelante se pueden
  * reservar a cualquier hora. El servidor aplica la misma regla.
  */
-export function isNextDayNotOpenYet(dateISO) {
+export function isNextDayClosed(dateISO) {
     const now = new Date();
-    if (now.getHours() >= NEXT_DAY_BOOKING_HOUR) return false;
+    if (now.getHours() < NEXT_DAY_BOOKING_HOUR) return false;
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     const year = tomorrow.getFullYear();
