@@ -19,18 +19,19 @@ export function todayLocalISO() {
 export const NEXT_DAY_BOOKING_HOUR = 21;
 
 /**
- * Última fecha (YYYY-MM-DD, hora local) que se puede reservar: hoy, o mañana
- * si ya son las 21:00 o más. El servidor aplica la misma regla.
+ * true si `dateISO` es mañana y todavía no son las 21:00: las reservas del día
+ * siguiente se abren a esa hora. Hoy y pasado mañana en adelante se pueden
+ * reservar a cualquier hora. El servidor aplica la misma regla.
  */
-export function maxBookableDateISO() {
+export function isNextDayNotOpenYet(dateISO) {
     const now = new Date();
-    if (now.getHours() >= NEXT_DAY_BOOKING_HOUR) {
-        now.setDate(now.getDate() + 1);
-    }
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    if (now.getHours() >= NEXT_DAY_BOOKING_HOUR) return false;
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = String(tomorrow.getDate()).padStart(2, '0');
+    return dateISO === `${year}-${month}-${day}`;
 }
 
 /**

@@ -3,7 +3,7 @@ import './UsageInfo.css';
 const RULES = [
     {
         title: 'Horario',
-        text: 'Mañanas de 9:00 a 13:30 y tardes de 16:00 a 20:30. Las reservas para el día siguiente se abren a las 21:00.',
+        text: 'Mañanas de 9:00 a 13:30 y tardes de 16:00 a 20:30. Las reservas para el día siguiente se abren a las 21:00; para los demás días se puede reservar a cualquier hora.',
     },
     {
         title: 'Límite diario',

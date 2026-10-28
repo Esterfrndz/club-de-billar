@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { todayLocalISO, maxBookableDateISO } from '../dateUtils';
+import { todayLocalISO, isNextDayNotOpenYet } from '../dateUtils';
 import './ReservationWizard.css';
 
 // Valores tal y como se guardan en la base de datos (ver migración 006).
@@ -125,10 +125,9 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             value={date}
                                             onChange={e => { setDate(e.target.value); setTime(''); }}
                                             min={todayLocalISO()}
-                                            max={maxBookableDateISO()}
                                         />
                                     </div>
-                                    {date > maxBookableDateISO() && (
+                                    {isNextDayNotOpenYet(date) && (
                                         <p className="step-description">
                                             Las reservas para el día siguiente se abren a las 21:00.
                                         </p>
@@ -158,7 +157,7 @@ export function ReservationWizard({ isOpen, onClose, onSubmit, tableData, checkA
                                             const [slotH, slotM] = slot.split(':').map(Number);
                                             const isPast = date === today && slotH * 60 + slotM + 90 <= nowMinutes;
 
-                                            const isNotOpenYet = date > maxBookableDateISO();
+                                            const isNotOpenYet = isNextDayNotOpenYet(date);
 
                                             const isDisabled = (isTaken && !soloReservation) || isPast || isNotOpenYet;
 
